@@ -3,6 +3,7 @@ classdef BasicAgent < handle %matlab.mixin.Copyable
     
     properties
         id
+        domain
         state
         
         color = get_random_color()
@@ -10,8 +11,9 @@ classdef BasicAgent < handle %matlab.mixin.Copyable
     
     methods
         
-        function self = BasicAgent(color)
-            if nargin > 0
+        function self = BasicAgent(domain, color)
+            self.domain = domain;
+            if nargin > 1
                 self.color = color;
             end
         end
