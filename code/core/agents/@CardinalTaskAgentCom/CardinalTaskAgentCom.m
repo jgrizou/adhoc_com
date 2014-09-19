@@ -1,64 +1,74 @@
-classdef CardinalTaskAgentCom < BasicAgent
-    %CARDINALTASKAGENTCOM 
+classdef CardinalTaskAgentCom < CardinalTaskAgent
+    %CARDINALTASKAGENTCOM
     
     properties
-        
-        cardinal % can be 1,2,3,4 for +x, -x, +y, -y
-        stucker
-        
+                
+        comType % can be 'action' or 'cardinal'
         comMapping
-        comType
-        
+               
     end
     
     methods
         
-        function self = CardinalTaskAgentCom(domain, cardinal, stucker, comType, comMapping)
-            self@BasicAgent(domain, get_nice_color('o'))
-            
-            self.cardinal = cardinal;
-            self.stucker = stucker;
-            
+        function self = CardinalTaskAgentCom(cardinal, stucker, comType, comMapping)
+            self@CardinalTaskAgent(cardinal, stucker)            
             self.comMapping = comMapping;
             self.comType = comType;
         end
         
-        function action = select_action(self)
-            %assume there is only one prey
-            preyState = self.domain.agents{self.domain.get_prey_idx()}.state;
-            
-            targetState = self.domain.environment.eval_next_state(preyState, self.cardinal);
-            if ~self.stucker
-                if self.cardinal == 1
-                    if preyState(1) ~= self.domain.lockingState(1)
-                        targetState(1) = targetState(1) + 1;
+        %%
+        function [action, message] = collect_action_and_message(self, domain, agentsMessages) %may be usefull to had the ordering, not needed if agents work well
+            domainUpdated = CardinalTaskAgentCom.update_domain_with_com(domain, agentsMessages);
+            action = self.compute_action(domainUpdated);
+            message = compute_message(self, action);
+        end
+                
+        %%        
+        function message = compute_message(self, action)
+            message = [];
+            switch self.comType
+                case 'action'
+                    if action < 5
+                        message = self.comMapping(action);
                     end
-                elseif self.cardinal == 2
-                    if preyState(1) ~= self.domain.lockingState(1)
-                        targetState(1) = targetState(1) - 1;
-                    end
-                elseif self.cardinal == 3
-                    if preyState(2) ~= self.domain.lockingState(2)
-                        targetState(2) = targetState(2) + 1;
-                    end
-                elseif self.cardinal == 4
-                    if preyState(2) ~= self.domain.lockingState(2)
-                        targetState(2) = targetState(2) - 1;
-                    end
-                end
-                targetState = self.domain.environment.format_state(targetState);
+                case 'cardinal'
+                    message = self.comMapping(self.cardinal);                    
+                otherwise
+                    error('comType %s unknown', self.comType)
+                    
             end
-            
-            if ismember(self.state, targetState, 'rows')
-                action = 5;
-                %action = self.domain.environment.get_action_to_neighbor_state(self.state, preyState);
-            else
-                while self.domain.is_state_occupied(targetState)
-                    % WARNING only guarantee to work if no more agent than gridSize!!!
-                    targetState = self.domain.environment.eval_next_state(targetState, self.cardinal);
+        end        
+    end
+    
+    methods(Static)
+        
+        function domainUpdated = update_domain_with_com(domain, agentsMessages)
+            %copy domain
+            domainUpdated = copy(domain);
+            ordering = domainUpdated.get_current_ordering();
+            %apply action in order is message sent
+            for i = ordering
+                agent = domainUpdated.agents{i};
+                message = agentsMessages{i};
+                if ~isempty(message)                    
+                    action = CardinalTaskAgentCom.decode_message(domainUpdated, agent, message);
+                    domainUpdated.apply_agent_action(i, action)
                 end
-                aStart = AStarSolver(self.domain);
-                action = aStart.solve_next_action(self.state, targetState);
+            end
+        end
+        
+        function action = decode_message(domain, agent, message)
+            switch agent.comType
+                case 'action'
+                    action = find(message == agent.comMapping);
+                case 'cardinal'
+                    decodedCardinal = find(message == agent.comMapping);
+                    if agent.cardinal ~= decodedCardinal
+                        error('something wrong in decoding message')
+                    end                    
+                    action = agent.compute_action(domain);
+                otherwise
+                    error('comType %s unknown', agent.comType)                    
             end
         end
         

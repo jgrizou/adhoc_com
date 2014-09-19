@@ -1,5 +1,5 @@
 [pathstr, ~, ~] = fileparts(mfilename('fullpath'));
-addpath(genpath(fullfile(pathstr, '..')));
+addpath(genpath(fullfile(pathstr, '.')));
 
 clear 'pathstr'
 

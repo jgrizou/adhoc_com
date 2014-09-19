@@ -34,8 +34,6 @@ classdef AStarSolver < handle
         end
         
         function [bestPath, nIterations] = solve(self, initState, endState)
-            self.initState = initState;
-            self.endState = endState;
             self.paths = {};
             self.paths{end+1} = Path(self.domain, 1:self.domain.environment.nActions, initState);
             
@@ -43,12 +41,12 @@ classdef AStarSolver < handle
             while true
                 self.remove_dead_path()
                 cheapestPath = self.get_cheapest_path();
-                if ismember(self.endState, cheapestPath.visitedStates(end, :), 'rows')
+                if ismember(endState, cheapestPath.visitedStates(end, :), 'rows')
                     bestPath = cheapestPath;
                     return
                 else
-                    newPath = cheapestPath.extend_path();
-                    if ismember(self.endState, newPath.visitedStates(end, :), 'rows')
+                    newPath = cheapestPath.extend_path(endState);
+                    if ismember(endState, newPath.visitedStates(end, :), 'rows')
                         %only because I know cost will always be one!!
                         bestPath = newPath;
                         return

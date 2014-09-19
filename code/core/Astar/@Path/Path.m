@@ -31,15 +31,24 @@ classdef Path < handle
             end
         end
         
-        function newPath = extend_path(self)
+        function newPath = extend_path(self, endState)
+            if isempty(self.remainingActions)
+               error('No more action available, this path should have been deleted!!!') 
+            end
             %take one action and remove from the available one
-            i = randi(length(self.remainingActions));
-            action = self.remainingActions(i);
-            self.remainingActions(i) = [];
+%             i = randi(length(self.remainingActions));
+%             action = self.remainingActions(i);
+%             self.remainingActions(i) = [];
+
+            %Our solver should be deterministic, therefore take alwasy the
+            %first action in the list!!
+            action = self.remainingActions(1);
+            self.remainingActions(1) = [];
+
             
             % take action
             currentState = self.visitedStates(end, :);
-            [newState, actionCost] = self.domain.evaluate_action(currentState, action);
+            [newState, actionCost] = self.domain.evaluate_action(currentState, action, endState);
             
             % newPath
             newPath = Path(self.domain, self.availableActions, ...
