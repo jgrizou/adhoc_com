@@ -1,0 +1,3 @@
+[submodule "code/matlab_tools"]
+	path = code/matlab_tools
+	url = git://github.com/jgrizou/matlab_tools.git
