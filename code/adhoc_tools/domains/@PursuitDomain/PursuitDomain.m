@@ -207,18 +207,7 @@ classdef PursuitDomain < matlab.mixin.Copyable
             end
             visibleStates = unique(visibleStates, 'rows');
         end
-        
-        %         function [nextState, cost] = evaluate_action(self, startState, action, endState)
-        %             cost = 1;
-        %             nextState = self.environment.eval_next_state(startState, action);
-        %             if ~ismember(nextState, endState, 'rows')
-        %                 if self.is_state_occupied(nextState)
-        %                     nextState = startState;
-        %                     cost = 1000;
-        %                 end
-        %             end
-        %         end
-        
+
         %%
         function actionProba = compute_optimal_action_proba(self, initState, targetState)
             [optimalPolicy, ~]  = self.compute_optimal_policy(targetState);
@@ -313,6 +302,7 @@ classdef PursuitDomain < matlab.mixin.Copyable
     end
     
     methods(Static)
+        
         function areEqual = are_domain_states_equal(domainState1, domainState2)
             areEqual = true;
             %predators

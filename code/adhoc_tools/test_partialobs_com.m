@@ -5,12 +5,14 @@ gridSize = 7;
 noiseLevel = 0.1;
 
 comType = 'relative';
+comMapping = 1:gridSize^2;
+comNoiseLevel = 0;
 
 predators = {};
-predators{end+1} = PartialObsAgentCom(1, comType);
-predators{end+1} = PartialObsAgentCom(2, comType);
-predators{end+1} = PartialObsAgentCom(3, comType);
-predators{end+1} = PartialObsAgentCom(4, comType);
+predators{end+1} = PartialObsAgentCom(1, comType, comMapping, comNoiseLevel);
+predators{end+1} = PartialObsAgentCom(2, comType, comMapping, comNoiseLevel);
+predators{end+1} = PartialObsAgentCom(3, comType, comMapping, comNoiseLevel);
+predators{end+1} = PartialObsAgentCom(4, comType, comMapping, comNoiseLevel);
 
 prey = EscapingPrey();
 % prey = RandomPrey();
