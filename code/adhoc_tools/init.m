@@ -1,5 +1,6 @@
 [pathstr, ~, ~] = fileparts(mfilename('fullpath'));
 addpath(genpath(fullfile(pathstr, '.')));
+addpath(genpath(fullfile(pathstr, '../matlab_tools')));
 
 clear 'pathstr'
 
