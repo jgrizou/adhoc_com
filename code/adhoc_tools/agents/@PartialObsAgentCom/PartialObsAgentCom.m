@@ -74,8 +74,6 @@ classdef PartialObsAgentCom < PartialObsAgent
                 end
             end
         end
-                
-        
     end
     
     methods(Static)
