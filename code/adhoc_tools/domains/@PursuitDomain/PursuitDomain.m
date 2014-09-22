@@ -221,8 +221,8 @@ classdef PursuitDomain < matlab.mixin.Copyable
         
         %%
         function actionProba = compute_optimal_action_proba(self, initState, targetState)
-            [optimalPolicy, MDP]  = self.compute_optimal_policy(targetState);
-            initMDPState = MDP.position_to_state(initState);
+            [optimalPolicy, ~]  = self.compute_optimal_policy(targetState);
+            initMDPState = ToroidalGridMDP.position_to_state(self.environment.gridSize,initState);
             actionProba = full(optimalPolicy(initMDPState,:));
         end
         

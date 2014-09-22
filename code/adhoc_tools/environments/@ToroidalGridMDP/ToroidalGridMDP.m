@@ -31,22 +31,10 @@ classdef ToroidalGridMDP < handle
             self.noiseLevel = noiseLevel;
             self.ToroidalModel = ToroidalGrid(gridSize);
         end
-        
-        %%
-        function state = position_to_state(self, position)
-            position = position - [1,1];
-            state = position(1) * self.gridSize + position(2) + 1;
-        end
-        
-        function position = state_to_position(self, state)
-            tmp = (state-1)/self.gridSize;
-            position(1) = floor(tmp) + 1;
-            position(2) = round((tmp - floor(tmp))*self.gridSize) + 1;
-        end
-        
+       
         %%
         function add_obstacle_at_position(self, position)
-            self.add_obstacle_at_state(self.position_to_state(position));
+            self.add_obstacle_at_state(ToroidalGridMDP.position_to_state(self.gridSize,position));
         end
         
         function add_obstacle_at_state(self, state)
@@ -56,7 +44,7 @@ classdef ToroidalGridMDP < handle
         %%
         function set_unitary_sparse_reward_at_position(self, position)
             R = zeros(self.nS, 1);
-            R(self.position_to_state(position)) = 1;
+            R(ToroidalGridMDP.position_to_state(self.gridSize,position)) = 1;
             self.set_reward(R);
         end
         
@@ -84,9 +72,9 @@ classdef ToroidalGridMDP < handle
                     actionProba = ToroidalGridMDP.generate_action_proba_for_action(action, self.noiseLevel);
                     for actionTaken = 1:4 % P{5} is already ok
                         if actionProba(actionTaken) > 0
-                            startPosition = self.state_to_position(startState);
+                            startPosition = ToroidalGridMDP.state_to_position(self.gridSize,startState);
                             nextPosition = self.ToroidalModel.eval_next_state(startPosition, actionTaken);
-                            nextState = self.position_to_state(nextPosition);
+                            nextState = ToroidalGridMDP.position_to_state(self.gridSize,nextPosition);
                             if any(nextState == self.obstacleStates)
                                 nextState = startState;
                             end
@@ -123,6 +111,17 @@ classdef ToroidalGridMDP < handle
             allActionsProba(3, :) = [sideProba, sideProba, successProba, 0, 0];
             allActionsProba(4, :) = [sideProba, sideProba, 0, successProba, 0];
             allActionsProba(5, :) = [0, 0, 0, 0, 1];            
+        end
+        
+        function state = position_to_state(gridSize, position)
+            position = position - [1,1];
+            state = position(1) * gridSize + position(2) + 1;
+        end
+        
+        function position = state_to_position(gridSize, state)
+            tmp = (state-1)/gridSize;
+            position(1) = floor(tmp) + 1;
+            position(2) = round((tmp - floor(tmp))*gridSize) + 1;
         end
         
     end
