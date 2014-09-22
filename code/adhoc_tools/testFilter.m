@@ -24,7 +24,7 @@ nHypothesis = length(allDomainStructs);
 
 iSelected = randi(nHypothesis); rec.logit(iSelected)
 domainStructSelected = allDomainStructs{iSelected};
-domainUsed = create_domain_from_struct(domainStructSelected, seed);
+domainUsed = create_domain_from_struct_with_seed(domainStructSelected, seed);
 domainUsed.init()
 domainState = domainUsed.get_domain_state(); rec.logit(domainState);
 
@@ -43,7 +43,7 @@ for i = 1:nStep
     for j = 1:nHypothesis
         add_counter(j, nHypothesis)        
         if ~isinf(logProbaHypothesis(j))
-            hypDomain = create_domain_from_struct(allDomainStructs{j}, seed);
+            hypDomain = create_domain_from_struct(allDomainStructs{j});
             hypDomain.load_domain_state(rec.domainState{end-1});
             logProbaHypothesis(j) = logProbaHypothesis(j) + hypDomain.compute_log_proba_next_domain_state(rec.domainState{end}, agentMessages, ordering);
         end
