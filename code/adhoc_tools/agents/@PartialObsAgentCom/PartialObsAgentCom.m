@@ -97,7 +97,7 @@ classdef PartialObsAgentCom < PartialObsAgent
                 if size(decodedPreyStatesFromMessages,1) == 1
                     decodedPreyState = decodedPreyStatesFromMessages;
                 else
-                    warning('non unique decoded prey State: should never happen yet')
+%                     warning('non unique decoded prey State: should never happen yet')
                     % most vote wins
                     cnt = zeros(size(k));
                     for i = 1:length(k)
