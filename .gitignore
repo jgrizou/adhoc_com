@@ -11,3 +11,8 @@ code/experiments/proba_next_state/analysis
 code/experiments/proba_next_state/wait_jobs
 code/experiments/proba_next_state/end_jobs
 code/experiments/proba_next_state/results
+code/experiments/first_adhoc_test/init_jobs
+code/experiments/first_adhoc_test/wait_jobs
+code/experiments/first_adhoc_test/run_jobs
+code/experiments/first_adhoc_test/end_jobs
+code/experiments/first_adhoc_test/results

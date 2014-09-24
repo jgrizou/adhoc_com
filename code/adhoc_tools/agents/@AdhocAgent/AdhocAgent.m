@@ -11,10 +11,10 @@ classdef AdhocAgent < BasicAgent
         
         domainStructHypothesis
         nHypothesis
-                
+        
         logProbaHypothesis
         probaHypothesis
-    
+        
     end
     
     methods
@@ -33,7 +33,7 @@ classdef AdhocAgent < BasicAgent
             %for each world config with porbability > 0 compute the action
             %proba and merge them to get the one of the adhoc
             actionProba = zeros(1,5);
-            for i = 1:self.nHypothesis  
+            for i = 1:self.nHypothesis
                 if ~isinf(self.logProbaHypothesis(i))
                     hypDomain = create_domain_from_struct(self.domainStructHypothesis{i});
                     hypDomain.load_domain_state(domain.get_domain_state());
@@ -44,12 +44,32 @@ classdef AdhocAgent < BasicAgent
             end
         end
         
-        function update_hypothesis_proba(self, logProbaHypothesis)
-            self.logProbaHypothesis = logProbaHypothesis;
-            self.probaHypothesis = log_normalize_row(logProbaHypothesis);            
+        function update_hypothesis_proba(self, prevDomainState, nextDomainState, ordering)
+            for i = 1:self.nHypothesis
+                add_counter(i, self.nHypothesis)
+                if ~isinf(self.logProbaHypothesis(i))
+                    hypDomain = AdhocAgent.create_adhoc_domain(self.domainStructHypothesis, i);
+                    hypDomain.load_domain_state(prevDomainState); %% sould take the domain state in rec
+                    self.logProbaHypothesis(i) = self.logProbaHypothesis(i) + hypDomain.compute_log_proba_next_domain_state(nextDomainState, ordering);
+                end
+                remove_counter(i, self.nHypothesis)
+            end
+            self.probaHypothesis = log_normalize_row(self.logProbaHypothesis);
+        end
+    end
+    
+    methods(Static)
+        
+        function adhocDomainStruct = create_adhoc_domain_struct(domainStructHypothesis, hypothesisSelected)
+            adhocDomainStruct = domainStructHypothesis{hypothesisSelected};
+            adhocDomainStruct.predators{1} = AdhocAgent(domainStructHypothesis);
+        end
+        
+        function adhocDomain = create_adhoc_domain(domainStructHypothesis, hypothesisSelected)
+            adhocDomainStruct = AdhocAgent.create_adhoc_domain_struct(domainStructHypothesis, hypothesisSelected);
+            adhocDomain = create_domain_from_struct(adhocDomainStruct); 
         end
         
     end
-    
 end
 

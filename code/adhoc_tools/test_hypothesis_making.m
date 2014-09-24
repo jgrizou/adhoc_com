@@ -1,5 +1,6 @@
+rec = Logger();
 
-init_random_seed(seed);
+init_random_seed(seed); 
 
 %% generate hypothesis
 gridSize = 7;
@@ -23,80 +24,54 @@ allLockingStates = generate_locking_states(gridSize, 4);
 domainStructHypothesis = generate_all_domains(gridSize, noiseLevel, allPredators, prey, allLockingStates);
 nHypothesis = length(domainStructHypothesis);
 
-%% select one domain struct
+%% select one domain struct with the adhoc
+hypothesisSelected = randi(nHypothesis);
+domain = create_domain_from_struct(domainStructHypothesis{hypothesisSelected});
+initDomainState = domain.get_domain_state();
 
-iSelected = randi(nHypothesis); 
-domainStructSelected = domainStructHypothesis{iSelected};
-domain = create_domain_from_struct(domainStructSelected);
-domain.init()
+%%
+adhocDomain = AdhocAgent.create_adhoc_domain(domainStructHypothesis, hypothesisSelected);
+adhocDomain.load_domain_state(initDomainState)
 
-%% a new domain with the adhoc
+domain = create_domain_from_struct(domainStructHypothesis{hypothesisSelected});
+domain.load_domain_state(adhocDomain.get_domain_state())
 
-adhocDomainStruct = domainStructSelected;
-adhocDomainStruct.predators{1} = AdhocAgent(domainStructHypothesis);
-adhocDomain = create_domain_from_struct(adhocDomainStruct);
+%% log init
+rec.logit(seed)
+rec.logit(domainStructHypothesis)
+rec.logit(hypothesisSelected)
+rec.logit(initDomainState)
 
 
 %%
-rec = Logger();
-
-
-nStep = 50;
-
-logProbaHypothesis = zeros(1, nHypothesis);
-for i = 1:nStep
-    add_counter(i, nStep)
+cnt = 0;
+while ~adhocDomain.is_prey_locked_at_locking_state()
+    cnt = cnt + 1;
+    add_counter(cnt)
     tic
     
-
-        
-    ordering = domain.generate_random_ordering_prey_last(); rec.logit(ordering);
-    
     %% iterate
-    domain.update_agents_messages(); % for now the order of messages does not matter
-    agentMessages = domain.get_messages(); rec.logit(agentMessages);
-    domainState = domain.get_domain_state(); rec.logit(domainState);
+    ordering = adhocDomain.generate_random_ordering_prey_last(); rec.logit(ordering);    
+    adhocDomain.update_agents_messages(); % for now the order of messages does not matter
     
-    %%    
-    trueAgentActionProba = domain.agents{1}.compute_action_proba(domain); rec.logit(trueAgentActionProba);
-    adhocDomain.load_domain_state(domainState); 
-    adhocAgentActionProba = adhocDomain.agents{1}.compute_action_proba(adhocDomain); rec.logit(adhocAgentActionProba);
-   
-    %%    
-    agentsActions = domain.collect_agents_actions();  
-    domain.apply_agents_actions(agentsActions, ordering)   
+    %% get domain state after message updated
+    domainState = adhocDomain.get_domain_state(); rec.logit(domainState);
+
+    %% collect and pally actions 
+    agentsActions = adhocDomain.collect_agents_actions();  
+    adhocDomain.apply_agents_actions(agentsActions, ordering)      
     
-    for j = 1:nHypothesis
-        add_counter(j, nHypothesis)        
-        if ~isinf(logProbaHypothesis(j))
-            hypDomain = create_domain_from_struct(domainStructHypothesis{j});
-            hypDomain.load_domain_state(domainState); %% sould take the domain state in rec
-            logProbaHypothesis(j) = logProbaHypothesis(j) + hypDomain.compute_log_proba_next_domain_state(domain.get_domain_state(), ordering);
-        end
-        remove_counter(j, nHypothesis)
-    end
-            
-    rec.logit(logProbaHypothesis)
-    rec.log_field('probaHypothesis', log_normalize_row(logProbaHypothesis))    
-            
-    %%
-    adhocDomain.agents{1}.update_hypothesis_proba(logProbaHypothesis);
-    
-    %%
-    loopTime = toc;
-    rec.logit(loopTime)
-    
-    remove_counter(i, nStep)
+    %% update hypothesis proba
+    adhocDomain.agents{1}.update_hypothesis_proba(domainState, adhocDomain.get_domain_state(), ordering)    
+ 
+    %% some morelog
+    rec.log_field('logProbaHypothesis', adhocDomain.agents{1}.logProbaHypothesis)
+    rec.log_field('probaHypothesis', adhocDomain.agents{1}.probaHypothesis)    
+                
+    loopTime = toc; rec.logit(loopTime)    
+    remove_counter(cnt)
 end
 
-
-%%
-subplot(3,1,1)
-imagesc(rec.trueAgentActionProba')
-subplot(3,1,2)
-imagesc(rec.adhocAgentActionProba')
-subplot(3,1,3)
-plot(rec.probaHypothesis)
 
 
 
