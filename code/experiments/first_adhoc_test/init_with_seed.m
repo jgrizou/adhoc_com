@@ -30,6 +30,7 @@ nHypothesis = length(domainStructHypothesis);
 %% select one domain struct with the adhoc
 hypothesisSelected = randi(nHypothesis);
 domain = create_domain_from_struct(domainStructHypothesis{hypothesisSelected});
+domain.init()
 initDomainState = domain.get_domain_state();
 
 

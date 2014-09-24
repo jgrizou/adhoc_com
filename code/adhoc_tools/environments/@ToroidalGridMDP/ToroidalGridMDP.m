@@ -116,12 +116,13 @@ classdef ToroidalGridMDP < handle
         function state = position_to_state(gridSize, position)
             position = position - [1,1];
             state = position(1) * gridSize + position(2) + 1;
+            state = round(state); %ensure integer
         end
         
         function position = state_to_position(gridSize, state)
             tmp = (state-1)/gridSize;
             position(1) = floor(tmp) + 1;
-            position(2) = round((tmp - floor(tmp))*gridSize) + 1;
+            position(2) = round((tmp - floor(tmp))*gridSize) + 1; % round to ensure integer
         end
         
     end
