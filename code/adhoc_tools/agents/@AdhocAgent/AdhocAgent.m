@@ -37,7 +37,6 @@ classdef AdhocAgent < BasicAgent
                 if ~isinf(self.logProbaHypothesis(i))
                     hypDomain = create_domain_from_struct(self.domainStructHypothesis{i});
                     hypDomain.load_domain_state(domain.get_domain_state());
-                    hypDomain.set_messages(domain.get_messages())
                     % here comes the hypothesis that adhoc is agent 1
                     tmpActionProba = hypDomain.agents{1}.compute_action_proba(hypDomain);
                     actionProba = actionProba + tmpActionProba * self.probaHypothesis(i);

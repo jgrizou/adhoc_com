@@ -29,8 +29,6 @@ iSelected = randi(nHypothesis);
 domainStructSelected = domainStructHypothesis{iSelected};
 domain = create_domain_from_struct(domainStructSelected);
 domain.init()
-domainState = domain.get_domain_state();
-
 
 %% a new domain with the adhoc
 
@@ -41,7 +39,7 @@ adhocDomain = create_domain_from_struct(adhocDomainStruct);
 
 %%
 rec = Logger();
-rec.logit(domainState);
+
 
 nStep = 50;
 
@@ -56,27 +54,24 @@ for i = 1:nStep
     
     %% iterate
     domain.update_agents_messages(); % for now the order of messages does not matter
-    agentsActions = domain.collect_agents_actions();
+    agentMessages = domain.get_messages(); rec.logit(agentMessages);
+    domainState = domain.get_domain_state(); rec.logit(domainState);
     
-    %% 
+    %%    
     trueAgentActionProba = domain.agents{1}.compute_action_proba(domain); rec.logit(trueAgentActionProba);
-    
     adhocDomain.load_domain_state(domainState); 
-    adhocDomain.set_messages(domain.get_messages())
     adhocAgentActionProba = adhocDomain.agents{1}.compute_action_proba(adhocDomain); rec.logit(adhocAgentActionProba);
    
     %%    
-    domain.apply_agents_actions(agentsActions, ordering)
-              
-    domainState = domain.get_domain_state(); rec.logit(domainState);    
-    agentMessages = domain.get_messages();
+    agentsActions = domain.collect_agents_actions();  
+    domain.apply_agents_actions(agentsActions, ordering)   
     
     for j = 1:nHypothesis
         add_counter(j, nHypothesis)        
         if ~isinf(logProbaHypothesis(j))
             hypDomain = create_domain_from_struct(domainStructHypothesis{j});
-            hypDomain.load_domain_state(rec.domainState{end-1});
-            logProbaHypothesis(j) = logProbaHypothesis(j) + hypDomain.compute_log_proba_next_domain_state(rec.domainState{end}, agentMessages, ordering);
+            hypDomain.load_domain_state(domainState); %% sould take the domain state in rec
+            logProbaHypothesis(j) = logProbaHypothesis(j) + hypDomain.compute_log_proba_next_domain_state(domain.get_domain_state(), ordering);
         end
         remove_counter(j, nHypothesis)
     end
