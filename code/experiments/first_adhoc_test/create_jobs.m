@@ -13,7 +13,7 @@ if ~exist(jobFolder, 'dir')
 end
 
 %%
-nJobs = 1;
+nJobs = 500;
 
 for i = 1:nJobs
     

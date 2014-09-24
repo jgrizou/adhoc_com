@@ -10,7 +10,7 @@ gridSize = 7;
 noiseLevel = 0;
 
 % teams of predators
-allCardinalOrders = generate_cardinal_orders(5);
+allCardinalOrders = generate_cardinal_orders(10);
 allComTypes = {'absolute', 'relative'};
 allComMappings = generate_mappings(gridSize, 1);
 comNoiseLevel = 0;

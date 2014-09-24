@@ -1,6 +1,6 @@
 [pathstr, ~, ~] = fileparts(mfilename('fullpath'));
 addpath(pathstr);
-addpath(genpath(fullfile(pathstr, '../adhoc_com/')));
+addpath(genpath(fullfile(pathstr, '../adhoc_tools/')));
 addpath(genpath(fullfile(pathstr, '../matlab_tools/')));
 
 clear 'pathstr'
