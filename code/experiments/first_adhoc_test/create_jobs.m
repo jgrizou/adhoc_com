@@ -16,14 +16,14 @@ end
 nJobs = 1;
 
 for i = 1:nJobs
-    jobFile = generate_available_filename(jobFolder, '.m', 10);
-    fid = fopen(jobFile, 'w');
     
     seed = i;
-    rec = init_with_seed(seed);
-    
+    rec = init_with_seed(seed);    
     initFilename = generate_available_filename(initFolder, '.mat', 10);
     rec.save(initFilename)
+    
+    jobFile = generate_available_filename(jobFolder, '.m', 10);
+    fid = fopen(jobFile, 'w');
     
     fprintf(fid, '%% adhoc \n');
     fprintf(fid, ['rec = run_adhoc_exp(''', initFilename, ''');\n']);
