@@ -1,7 +1,5 @@
-function rec = run_team_exp(initFilename)
+function rec = run_team_exp(rec)
 %RUN_TEAM_EXP
-
-load(initFilename)
 
 init_random_seed(rec.seed); 
 domain = create_domain_from_struct(rec.domainStructHypothesis{rec.hypothesisSelected});

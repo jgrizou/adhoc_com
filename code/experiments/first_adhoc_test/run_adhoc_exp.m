@@ -1,7 +1,5 @@
-function rec = run_adhoc_exp(initFilename)
+function rec = run_adhoc_exp(rec)
 %RUN_ADHOC_EXP
-
-load(initFilename)
 
 init_random_seed(rec.seed); 
 adhocDomain = AdhocAgent.create_adhoc_domain(rec.domainStructHypothesis, rec.hypothesisSelected);

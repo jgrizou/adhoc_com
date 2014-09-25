@@ -49,7 +49,7 @@ classdef AdhocAgent < BasicAgent
                 add_counter(i, self.nHypothesis)
                 if ~isinf(self.logProbaHypothesis(i))
                     hypDomain = AdhocAgent.create_adhoc_domain(self.domainStructHypothesis, i);
-                    hypDomain.load_domain_state(prevDomainState); %% sould take the domain state in rec
+                    hypDomain.load_domain_state(prevDomainState); %% should take the domain state in rec
                     self.logProbaHypothesis(i) = self.logProbaHypothesis(i) + hypDomain.compute_log_proba_next_domain_state(nextDomainState, ordering);
                 end
                 remove_counter(i, self.nHypothesis)

@@ -1,4 +1,4 @@
-function rec = init_with_seed(seed)
+function rec = init_hypothesis_with_seed(seed)
 %INIT_WITH_SEED 
 
 rec = Logger();
