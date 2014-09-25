@@ -1,1 +1,0 @@
-prey = RandomAgent(get_nice_color('g'));
