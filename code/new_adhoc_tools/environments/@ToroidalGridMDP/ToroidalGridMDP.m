@@ -213,7 +213,34 @@ classdef ToroidalGridMDP < handle
             end
         end
         
+        %% Warning these function are made such that [1,1] in relative is the reference!!
+        function absoluteState = relative_to_absolute_state(self, referenceState, relativeState)
+            referencePosition = self.state_to_position(referenceState);
+            relativePosition = self.state_to_position(relativeState);
+            absolutePosition = self.relative_to_absolute_position(referencePosition, relativePosition);
+            absoluteState = self.position_to_state(absolutePosition);
+        end
+            
+        function absolutePosition = relative_to_absolute_position(self, referencePosition, relativePosition)
+            absolutePosition = self.format_position(referencePosition + relativePosition - [1,1]);
+        end
+        
+        function relativeState = absolute_to_relative_state(self, referenceState, absoluteState)
+            referencePosition = self.state_to_position(referenceState);
+            absolutePosition = self.state_to_position(absoluteState);
+            relativePosition = self.absolute_to_relative_position(referencePosition, absolutePosition);
+            relativeState = self.position_to_state(relativePosition);
+        end
+        
+        function relativePosition = absolute_to_relative_position(self, referencePosition, absolutePosition)
+            relativePosition = self.format_position(absolutePosition - referencePosition + [1,1]);
+        end
+        
         %%
+        
+        function allStates = get_all_states(self)
+            allStates = 1:self.nStates;
+        end
         
         function randomState = get_random_state(self)
             randomState = randi(self.nStates);

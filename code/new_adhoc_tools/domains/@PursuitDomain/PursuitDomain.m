@@ -151,10 +151,17 @@ classdef PursuitDomain < matlab.mixin.Copyable
             preyState = self.get_agent_state(self.preyIdx);
         end
         
+        function predatorsStates = get_predators_states(self)
+           predatorsStates = zeros(length(self.predatorsIdx), 1);
+           for i = 1:length(self.predatorsIdx)
+               predatorsStates(i) = self.get_agent_state(self.predatorsIdx(i));
+           end
+        end
+        
         function state = get_agent_state(self, agentIdx)
             state = self.agentsStates(agentIdx);
         end
-        
+                
         function set_agent_state(self, agentIdx, state)
             self.agentsStates(agentIdx) = state;
         end
@@ -167,6 +174,7 @@ classdef PursuitDomain < matlab.mixin.Copyable
                 occupiedStates(i) = self.get_agent_state(i);
             end
         end
+        
         
         function isOccupied = is_state_occupied(self, state)
             if any(state == self.get_occupied_states())

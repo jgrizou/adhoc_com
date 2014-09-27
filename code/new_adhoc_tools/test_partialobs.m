@@ -2,7 +2,6 @@ clean
 seed = 0;
 
 %%
-init_random_seed(seed);
 gridSize = 7;
 noiseLevel = 0;
 

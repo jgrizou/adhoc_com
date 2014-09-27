@@ -18,8 +18,6 @@ classdef BasicAgent < matlab.mixin.Copyable
             state = domain.get_agent_state(self.id);
         end
         
-
-        
         function action = compute_action(self, domain)
             actionProba = self.compute_action_proba(domain);
             action = sample_action_discrete_policy(actionProba, 1);

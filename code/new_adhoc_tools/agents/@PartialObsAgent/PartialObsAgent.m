@@ -43,7 +43,7 @@ classdef PartialObsAgent < AutoCardinalTaskAgent
                
         function obstacleProba = compute_obstacle_proba(~, domain, stateReward)
             obstacleProba = domain.environment.get_empty_obstacle_proba();
-            occupiedStates = domain.get_occupied_states();
+            occupiedStates = domain.get_occupied_states(); %% if you don't see the prey you can't use it as an obstacle!!!
             toFreeState = find(stateReward > 0);
             obstacleState = setdiff(occupiedStates, toFreeState);
             obstacleProba(obstacleState) = 1;
