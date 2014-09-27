@@ -1,5 +1,5 @@
 clean
-seed = 0;
+seed = 1;
 
 %%
 gridSize = 7;

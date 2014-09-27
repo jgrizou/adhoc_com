@@ -13,6 +13,53 @@ classdef PartialObsAgent < AutoCardinalTaskAgent
         end
         
         %%
+        
+        function actionProba = compute_action_proba(self, domain)
+            agentState = self.get_state(domain);
+            preyStateProba = self.compute_prey_state_proba(domain);
+            stateReward = self.compute_state_reward(domain, preyStateProba);
+            obstacleProba = self.compute_obstacle_proba(domain, stateReward, preyStateProba);
+            actionProba = domain.compute_optimal_action_proba(agentState, stateReward, obstacleProba);
+        end
+        
+        function preyStateProba = compute_prey_state_proba(self, domain)
+            
+            preyStateProba = domain.environment.get_empty_obstacle_proba(); % same size
+                
+            if self.is_prey_visible(domain)
+                preyState = domain.get_prey_state();
+                preyStateProba(preyState) = 1;
+            else
+                preyStates = self.get_invisible_states(domain);
+                preyStateProba(preyStates) = 1/length(preyStates);
+            end
+            
+            if ~is_proba_normalized_row(preyStateProba)
+                error('preyStateProba non normalized')
+            end
+        end
+        
+        function stateReward = compute_state_reward(self, domain, preyStateProba)
+            stateReward = domain.environment.get_empty_state_reward();
+            for i = 1:length(preyStateProba)
+                if preyStateProba(i) > 0
+                    targetState = self.compute_target_states_from_prey_states(domain, i);
+                    stateReward(targetState) = preyStateProba(i);
+                end
+            end
+        end
+        
+        function obstacleProba = compute_obstacle_proba(~, domain, stateReward, preyStateProba)
+            obstacleProba = preyStateProba;
+            
+            predatorsStates = domain.get_predators_states();
+            toFreeState = find(stateReward > 0);
+            obstacleState = setdiff(predatorsStates, toFreeState);
+            
+            obstacleProba(obstacleState) = 1;
+        end
+        
+        %%
         function visibleStates = get_visible_states(self, domain)
             visibleStates = domain.compute_visible_states(self.get_state(domain), self.visibleAreaActionSequence);
         end
@@ -30,24 +77,6 @@ classdef PartialObsAgent < AutoCardinalTaskAgent
             end
         end
         
-        function stateReward = compute_state_reward(self, domain)
-            stateReward = domain.environment.get_empty_state_reward();
-            if self.is_prey_visible(domain)
-                preyStates = domain.get_prey_state();          
-            else
-                preyStates = self.get_invisible_states(domain);
-            end            
-            targetStates = self.compute_target_states_from_prey_states(domain, preyStates);
-            stateReward(targetStates) = 1; % all equiprobable
-        end
-               
-        function obstacleProba = compute_obstacle_proba(~, domain, stateReward)
-            obstacleProba = domain.environment.get_empty_obstacle_proba();
-            occupiedStates = domain.get_occupied_states(); %% if you don't see the prey you can't use it as an obstacle!!!
-            toFreeState = find(stateReward > 0);
-            obstacleState = setdiff(occupiedStates, toFreeState);
-            obstacleProba(obstacleState) = 1;
-        end
         
         %%
         

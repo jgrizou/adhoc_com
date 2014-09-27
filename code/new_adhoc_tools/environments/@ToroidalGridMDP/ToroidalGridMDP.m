@@ -15,15 +15,7 @@ classdef ToroidalGridMDP < handle
             0, 1;
             0,-1;
             0, 0]
-        
-        %the following variable must keep the same name to be used with
-        %Value Iteration Solver
-        Gamma = 0.95 % Discount factor - for Value Iteration (VI) solver
-        nS % Number of state
-        nA = 5 % Number of action
-        P % Transisiton matrix
-        R % Reward
-        
+                
         noiseLevel
         
         obstaleFreeMDPNoNoise % used to simulated the domain, with several agents

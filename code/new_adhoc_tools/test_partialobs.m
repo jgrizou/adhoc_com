@@ -22,13 +22,14 @@ domain.init()
 
 tic
 cnt = 0;
+domain.draw()
 while ~domain.is_prey_locked_at_locking_state()
     cnt = cnt + 1
     ordering = domain.generate_random_ordering_prey_last();
     domain.iterate(ordering)
-%     domain.draw()
-%     drawnow
-%     pause
+    pause
+    domain.draw()
+    drawnow
 end
 domain.draw()
 toc
