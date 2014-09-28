@@ -67,9 +67,11 @@ classdef PursuitDomain < matlab.mixin.Copyable
         end
                 
         %%
-        function iterate(self, ordering)
-            self.update_agents_messages(); % for now the order of messages does not matter
-            agentsActions = self.collect_agents_actions();
+        function recorder = iterate(self, ordering, recorder)
+            self.update_agents_messages();
+            recorder.log_field('domainState', self.get_domain_state())
+
+            agentsActions = self.collect_agents_actions(recorder); 
             self.apply_agents_actions(agentsActions, ordering)
             
             if ~self.check_states()
@@ -109,10 +111,10 @@ classdef PursuitDomain < matlab.mixin.Copyable
         end
         
         %%
-        function agentsActions = collect_agents_actions(self)
+        function agentsActions = collect_agents_actions(self, recorder)
             agentsActions = zeros(length(self.agents), 1);
             for i = 1:length(self.agents)
-                agentsActions(i) = self.agents{i}.compute_action(self);
+                agentsActions(i) = self.agents{i}.compute_action(self, recorder);
             end
         end
         
@@ -262,6 +264,7 @@ classdef PursuitDomain < matlab.mixin.Copyable
         %%
         function draw(self)
             %draw grid
+            self.environment.drawer.reset_colors()
             self.environment.drawer.draw()
             hold on
             %draw locking state

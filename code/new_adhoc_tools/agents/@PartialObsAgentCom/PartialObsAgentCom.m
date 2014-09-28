@@ -174,6 +174,12 @@ classdef PartialObsAgentCom < PartialObsAgent
             rawMessage = find(mapping == mappedMessage);
         end
         
+        %%
+        function draw_prey_state_proba(domain, preyStateProba)
+            limMinMax = [0, 1];
+            domain.environment.drawer.set_all_colors_by_values(preyStateProba, limMinMax)
+            domain.environment.drawer.draw(limMinMax)
+        end
         
     end
 end

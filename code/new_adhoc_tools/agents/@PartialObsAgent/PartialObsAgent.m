@@ -14,12 +14,12 @@ classdef PartialObsAgent < AutoCardinalTaskAgent
         
         %%
         
-        function actionProba = compute_action_proba(self, domain)
+        function actionProba = compute_action_proba(self, domain, recorder)
             agentState = self.get_state(domain);
-            preyStateProba = self.compute_prey_state_proba(domain);
-            stateReward = self.compute_state_reward(domain, preyStateProba);
-            obstacleProba = self.compute_obstacle_proba(domain, stateReward, preyStateProba);
-            actionProba = domain.compute_optimal_action_proba(agentState, stateReward, obstacleProba);
+            preyStateProba = self.compute_prey_state_proba(domain); recorder.logit(preyStateProba)
+            stateReward = self.compute_state_reward(domain, preyStateProba); recorder.logit(stateReward)
+            obstacleProba = self.compute_obstacle_proba(domain, stateReward, preyStateProba); recorder.logit(obstacleProba)
+            actionProba = domain.compute_optimal_action_proba(agentState, stateReward, obstacleProba); recorder.logit(actionProba)
         end
         
         function preyStateProba = compute_prey_state_proba(self, domain)
@@ -81,6 +81,7 @@ classdef PartialObsAgent < AutoCardinalTaskAgent
         %%
         
         function draw_visible_states(self, domain)
+            domain.environment.drawer.reset_colors()
             domain.environment.drawer.draw()
             visibleStates = self.get_visible_states(domain);
             for i = 1:length(visibleStates)
@@ -90,6 +91,7 @@ classdef PartialObsAgent < AutoCardinalTaskAgent
         end
         
         function draw_invisible_states(self, domain)
+            domain.environment.drawer.reset_colors()
             domain.environment.drawer.draw()
             visibleStates = self.get_invisible_states(domain);
             for i = 1:length(visibleStates)
