@@ -118,10 +118,10 @@ classdef PursuitDomain < matlab.mixin.Copyable
             end
         end
         
-        function agentsActionsProba = collect_agents_actions_proba(self)
+        function agentsActionsProba = collect_agents_actions_proba(self, recorder)
             agentsActionsProba = zeros(length(self.agents), self.environment.nActions);
             for i = 1:length(self.agents)
-                agentsActionsProba(i, :) = self.agents{i}.compute_action_proba(self);
+                agentsActionsProba(i, :) = self.agents{i}.compute_action_proba(self, recorder);
             end
         end
         
@@ -259,7 +259,36 @@ classdef PursuitDomain < matlab.mixin.Copyable
             %set message
             self.set_all_messages(domainState.agentMessages)
         end
-              
+             
+        function logProbaNextDomainState = compute_log_proba_next_domain_state(self, nextDomainState, ordering, recorder)
+            logProbaNextDomainState = -Inf;
+            %simulate agent action given messages
+            agentsActionsProba = self.collect_agents_actions_proba(recorder);
+            noiseActionProba = self.environment.generate_all_actions_proba();
+            %merged them so next step will be faster
+            mergedAgentsActionsProba = agentsActionsProba * noiseActionProba;
+            %generating all possible cases, here we assume there is 5 agents!!
+            if size(agentsActionsProba, 1) ~= 5
+                error('should be 5 agents here')
+            end
+            actionIdx = 1:self.environment.nActions;
+            [x1,x2,x3,x4,x5] = ndgrid(actionIdx,actionIdx,actionIdx,actionIdx,actionIdx);
+            actionsIndexes = [x1(:),x2(:),x3(:),x4(:),x5(:)];
+            %go through all possible next states and add proba when similar
+            for i = 1:size(actionsIndexes, 1)
+                logProba = PursuitDomain.log_proba_from_action_indexe(mergedAgentsActionsProba, actionsIndexes(i, :));
+                if logProba > -Inf                    
+                    domainCopy = copy(self);
+                    for j = ordering
+                        domainCopy.apply_agent_action(j, actionsIndexes(i, j))
+                    end
+                    % if same domain state increase proba
+                    if PursuitDomain.are_domain_states_equal(domainCopy.get_domain_state(), nextDomainState)
+                        logProbaNextDomainState = add_lns(logProbaNextDomainState, logProba);
+                    end
+                end
+            end
+        end
         
         %%
         function draw(self)
@@ -300,6 +329,13 @@ classdef PursuitDomain < matlab.mixin.Copyable
             if ~all(domainState1.preyState == domainState2.preyState) % assumes one prey
                 areEqual = false;
                 return
+            end
+        end
+        
+        function logProba = log_proba_from_action_indexe(agentsActionsProba, actionsIndexe)
+            logProba = 0;
+            for i = 1:size(agentsActionsProba, 1)
+                logProba = logProba + log(agentsActionsProba(i, actionsIndexe(i)));
             end
         end
         
