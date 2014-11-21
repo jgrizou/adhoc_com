@@ -114,14 +114,18 @@ classdef PursuitDomain < matlab.mixin.Copyable
         function agentsActions = collect_agents_actions(self, recorder)
             agentsActions = zeros(length(self.agents), 1);
             for i = 1:length(self.agents)
-                agentsActions(i) = self.agents{i}.compute_action(self, recorder);
+                agentLog = Logger();
+                agentsActions(i) = self.agents{i}.compute_action(self, agentLog);
+                recorder.logit(agentLog)
             end
         end
         
         function agentsActionsProba = collect_agents_actions_proba(self, recorder)
             agentsActionsProba = zeros(length(self.agents), self.environment.nActions);
             for i = 1:length(self.agents)
-                agentsActionsProba(i, :) = self.agents{i}.compute_action_proba(self, recorder);
+                agentLog = Logger();
+                agentsActionsProba(i, :) = self.agents{i}.compute_action_proba(self, agentLog);
+                recorder.logit(agentLog)
             end
         end
         
@@ -167,7 +171,6 @@ classdef PursuitDomain < matlab.mixin.Copyable
         function set_agent_state(self, agentIdx, state)
             self.agentsStates(agentIdx) = state;
         end
-        
 
         %%
         function occupiedStates = get_occupied_states(self)
@@ -260,10 +263,10 @@ classdef PursuitDomain < matlab.mixin.Copyable
             self.set_all_messages(domainState.agentMessages)
         end
              
-        function logProbaNextDomainState = compute_log_proba_next_domain_state(self, nextDomainState, ordering, recorder)
+        function logProbaNextDomainState = compute_log_proba_next_domain_state(self, nextDomainState, ordering)
             logProbaNextDomainState = -Inf;
             %simulate agent action given messages
-            agentsActionsProba = self.collect_agents_actions_proba(recorder);
+            agentsActionsProba = self.collect_agents_actions_proba(Logger());
             noiseActionProba = self.environment.generate_all_actions_proba();
             %merged them so next step will be faster
             mergedAgentsActionsProba = agentsActionsProba * noiseActionProba;
@@ -277,10 +280,11 @@ classdef PursuitDomain < matlab.mixin.Copyable
             %go through all possible next states and add proba when similar
             for i = 1:size(actionsIndexes, 1)
                 logProba = PursuitDomain.log_proba_from_action_indexe(mergedAgentsActionsProba, actionsIndexes(i, :));
-                if logProba > -Inf                    
+                if ~isinf(logProba)                
                     domainCopy = copy(self);
-                    for j = ordering
-                        domainCopy.apply_agent_action(j, actionsIndexes(i, j))
+                    for j = 1:length(ordering)
+                        agentIdx = ordering(j);
+                        domainCopy.apply_agent_action(agentIdx, actionsIndexes(i, agentIdx))
                     end
                     % if same domain state increase proba
                     if PursuitDomain.are_domain_states_equal(domainCopy.get_domain_state(), nextDomainState)
@@ -311,22 +315,12 @@ classdef PursuitDomain < matlab.mixin.Copyable
         function areEqual = are_domain_states_equal(domainState1, domainState2)
             areEqual = true;
             %predators
-            if size(domainState1.predatorsStates,1) ~= size(domainState2.predatorsStates,1)
+            if any(domainState1.predatorsStates ~= domainState2.predatorsStates)
                 areEqual = false;
                 return
-            end
-            for i = 1:length(domainState1.predatorsStates)
-                if ~ismember(domainState1.predatorsStates(i, :), domainState2.predatorsStates(i, :), 'rows')
-                    areEqual = false;
-                    return
-                end
             end
             %prey
-            if size(domainState1.preyState, 1) ~= size(domainState2.preyState, 1)
-                areEqual = false;
-                return
-            end
-            if ~all(domainState1.preyState == domainState2.preyState) % assumes one prey
+            if domainState1.preyState ~= domainState2.preyState
                 areEqual = false;
                 return
             end

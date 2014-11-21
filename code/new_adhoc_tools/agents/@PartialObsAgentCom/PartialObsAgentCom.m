@@ -23,7 +23,7 @@ classdef PartialObsAgentCom < PartialObsAgent
                 preyState = domain.get_prey_state();
                 preyStateProba(preyState) = 1;
             else
-                % this function could be precomuted to win time, as it is common to all agent
+                % this function could be precomputed to win time, as it is common to all agent
                 preyStateProba = PartialObsAgentCom.decode_all_agent_messages(domain); 
             end
             
@@ -61,43 +61,47 @@ classdef PartialObsAgentCom < PartialObsAgent
                 messageProba = PartialObsAgentCom.map_message_proba(messageProba, self.comMapping);
             end
         end
-    end
-    
-    methods(Static)
         
         %%
-        function [preyStateProba, allPreyStateProba] = decode_all_agent_messages(domain)            
-            allPreyStateProba = zeros(length(domain.predatorsIdx), domain.environment.nStates);
-            for i = 1:length(domain.predatorsIdx) % only consider the predators
-                agentIdx = domain.predatorsIdx(i);
-                allPreyStateProba(i, :) = PartialObsAgentCom.decode_agent_message(domain, agentIdx);
-            end
-            preyStateLikelihood = prod(allPreyStateProba, 1);
-            preyStateProba = proba_normalize_row(preyStateLikelihood);
-        end
-        
-        function preyStateProba = decode_agent_message(domain, agentIdx)
+        function preyStateProba = decode_my_message(self, domain, message)
             preyStateProba = domain.environment.get_empty_obstacle_proba();
-            agent = domain.agents{agentIdx};
-            message = domain.agentsMessages(agentIdx);
-            
+          
             % just the fact of talking or not gives a lot of information
             if message == 0 % the agent do not see the prey
-                possiblePreyStates = agent.get_invisible_states(domain);
+                possiblePreyStates = self.get_invisible_states(domain);
             else % the agent see the prey
-                possiblePreyStates = agent.get_visible_states(domain);
+                possiblePreyStates = self.get_visible_states(domain);
             end
             preyStateProba(possiblePreyStates) = 1/length(possiblePreyStates);
             
             % decode the message if any
             if message ~= 0
                 decodedMessageProba = domain.environment.get_empty_obstacle_proba();
-                rawMessage = PartialObsAgentCom.unmap_message(message, agent.comMapping);
-                decodedPreyState = PartialObsAgentCom.decode_message(domain, agent, rawMessage);
+                rawMessage = PartialObsAgentCom.unmap_message(message, self.comMapping);
+                decodedPreyState = PartialObsAgentCom.decode_message(domain, self, rawMessage);
                 decodedMessageProba(decodedPreyState) = 1;
-                noisyDecodedMessageProba = PartialObsAgentCom.backward_noise_message(domain, decodedMessageProba, agent.comNoiseLevel);
+                noisyDecodedMessageProba = PartialObsAgentCom.backward_noise_message(domain, decodedMessageProba, self.comNoiseLevel);
                 preyStateProba = preyStateProba .* noisyDecodedMessageProba;
             end
+            preyStateProba = proba_normalize_row(preyStateProba);
+        end
+        
+    end
+    
+    methods(Static)
+        
+        %%
+        function [preyStateProba, allPreyStateProba] = decode_all_agent_messages(domain)            
+            allPreyStateProba = ones(length(domain.agents), domain.environment.nStates) / domain.environment.nStates;
+            for i = 1:length(domain.agents) % only consider the predators
+                agent = domain.agents{i};                
+                if ismethod(agent, 'decode_my_message')
+                    message = domain.agentsMessages(i);
+                    allPreyStateProba(i, :) = agent.decode_my_message(domain, message);
+                end
+            end
+            preyStateLikelihood = prod(allPreyStateProba, 1);
+            preyStateProba = proba_normalize_row(preyStateLikelihood);
         end
         
         %%
@@ -144,7 +148,7 @@ classdef PartialObsAgentCom < PartialObsAgent
         function noisyDecodedMessageProba = backward_noise_message(domain, decodedMessageProba, comNoiseLevel)
             % !! WARNING !!
             % this is only possible because the function forward and backward are symetric in our case
-            % you shoudl rewrite this function is you change the forward noise model!
+            % you shoull rewrite this function if you change the forward noise model!
             noisyDecodedMessageProba = PartialObsAgentCom.forward_noise_message(domain, decodedMessageProba, comNoiseLevel);
         end
         

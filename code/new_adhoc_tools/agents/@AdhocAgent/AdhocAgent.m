@@ -31,7 +31,7 @@ classdef AdhocAgent < BasicAgent
         end
         
         function actionProba = compute_action_proba(self, domain, recorder)
-            %for each world config with porbability > 0 compute the action
+            %for each world config with probability > 0 compute the action
             %proba and merge them to get the one of the adhoc
             actionProba = zeros(1,5);
             for i = 1:self.nHypothesis
@@ -39,19 +39,28 @@ classdef AdhocAgent < BasicAgent
                     hypDomain = create_domain_from_struct(self.domainStructHypothesis{i});
                     hypDomain.load_domain_state(domain.get_domain_state());
                     % here comes the hypothesis that adhoc is agent 1
-                    tmpActionProba = hypDomain.agents{1}.compute_action_proba(hypDomain, recorder);
+                    tmpActionProba = hypDomain.agents{1}.compute_action_proba(hypDomain, Logger());
                     actionProba = actionProba + tmpActionProba * self.probaHypothesis(i);
                 end
             end
+            stateReward = domain.environment.get_empty_state_reward(); recorder.logit(stateReward)
+            obstacleProba = domain.environment.get_empty_obstacle_proba(); recorder.logit(obstacleProba)
+            recorder.logit(actionProba)
         end
         
-        function update_hypothesis_proba(self, prevDomainState, nextDomainState, ordering, recorder)
+        function update_hypothesis_proba(self, prevDomainState, nextDomainState, ordering)
+            prevLogProbaHypothesis = self.logProbaHypothesis;
+            prevProbaHypothesis = self.probaHypothesis;
             for i = 1:self.nHypothesis
                 add_counter(i, self.nHypothesis)
                 if ~isinf(self.logProbaHypothesis(i))
+                    % create hyp domain
                     hypDomain = AdhocAgent.create_adhoc_domain(self.domainStructHypothesis, i);
                     hypDomain.load_domain_state(prevDomainState); %% should take the domain state in rec
-                    self.logProbaHypothesis(i) = self.logProbaHypothesis(i) + hypDomain.compute_log_proba_next_domain_state(nextDomainState, ordering, recorder);
+                    hypDomain.agents{1}.logProbaHypothesis = prevLogProbaHypothesis;
+                    hypDomain.agents{1}.probaHypothesis = prevProbaHypothesis;
+                    % update proba        
+                    self.logProbaHypothesis(i) = self.logProbaHypothesis(i) + hypDomain.compute_log_proba_next_domain_state(nextDomainState, ordering);
                 end
                 remove_counter(i, self.nHypothesis)
             end

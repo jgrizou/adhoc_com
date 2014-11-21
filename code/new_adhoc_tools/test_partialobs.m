@@ -20,14 +20,18 @@ domain.init()
 
 %%
 
+rec = Logger()
+
 tic
 cnt = 0;
 domain.draw()
 while ~domain.is_prey_locked_at_locking_state()
     cnt = cnt + 1
-    ordering = domain.generate_random_ordering_prey_last();
-    domain.iterate(ordering)
-    pause
+    
+    stepLog = Logger();
+    ordering = domain.generate_random_ordering_prey_last(); stepLog.logit(ordering)
+    stepLog = domain.iterate(ordering, stepLog); rec.logit(stepLog)
+    
     domain.draw()
     drawnow
 end
