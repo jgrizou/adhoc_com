@@ -48,22 +48,43 @@ classdef AdhocAgent < BasicAgent
             recorder.logit(actionProba)
         end
         
-        function update_hypothesis_proba(self, prevDomainState, nextDomainState, ordering)
-            prevLogProbaHypothesis = self.logProbaHypothesis;
-            prevProbaHypothesis = self.probaHypothesis;
+        %%        
+        function logProbaHypothesisUpdate = compute_hypothesis_log_update_from_state(self, prevDomainState, nextDomainState, ordering)
+            logProbaHypothesisUpdate = -inf(1, self.nHypothesis);
             for i = 1:self.nHypothesis
                 add_counter(i, self.nHypothesis)
                 if ~isinf(self.logProbaHypothesis(i))
                     % create hyp domain
                     hypDomain = AdhocAgent.create_adhoc_domain(self.domainStructHypothesis, i);
-                    hypDomain.load_domain_state(prevDomainState); %% should take the domain state in rec
-                    hypDomain.agents{1}.logProbaHypothesis = prevLogProbaHypothesis;
-                    hypDomain.agents{1}.probaHypothesis = prevProbaHypothesis;
+                    % load prev state
+                    hypDomain = AdhocAgent.init_adhoc_domain(hypDomain, prevDomainState, self.logProbaHypothesis, self.probaHypothesis);
                     % update proba        
-                    self.logProbaHypothesis(i) = self.logProbaHypothesis(i) + hypDomain.compute_log_proba_next_domain_state(nextDomainState, ordering);
+                    logProbaHypothesisUpdate(i) = hypDomain.compute_log_proba_next_domain_state(nextDomainState, ordering);
                 end
                 remove_counter(i, self.nHypothesis)
             end
+        end
+        
+        function logProbaHypothesisUpdate = compute_hypothesis_log_update_from_message(self, domainState)
+            logProbaHypothesisUpdate = -inf(1, self.nHypothesis);
+            for i = 1:self.nHypothesis
+                add_counter(i, self.nHypothesis)
+                if ~isinf(self.logProbaHypothesis(i))
+                    % create hyp domain
+                    hypDomain = AdhocAgent.create_adhoc_domain(self.domainStructHypothesis, i);
+                    % load prev state
+                    hypDomain = AdhocAgent.init_adhoc_domain(hypDomain, domainState, self.logProbaHypothesis, self.probaHypothesis);
+                    % update proba    
+                    [~, allPreyStateProba] = PartialObsAgentCom.decode_all_agent_messages(hypDomain);
+                    logProbaHypothesisUpdate(i) = add_log_array(sum(log(allPreyStateProba)));
+                end
+                remove_counter(i, self.nHypothesis)
+            end
+        end        
+        
+        
+        function update_hypothesis_proba(self, logProbaHypothesisUpdate)
+            self.logProbaHypothesis = self.logProbaHypothesis + logProbaHypothesisUpdate;
             self.probaHypothesis = log_normalize_row(self.logProbaHypothesis);
         end
         
@@ -88,6 +109,12 @@ classdef AdhocAgent < BasicAgent
     end
     
     methods(Static)
+        
+        function adhocDomain = init_adhoc_domain(adhocDomain, domainState, logProbaHypothesis, probaHypothesis)
+            adhocDomain.load_domain_state(domainState);
+            adhocDomain.agents{1}.logProbaHypothesis = logProbaHypothesis;
+            adhocDomain.agents{1}.probaHypothesis = probaHypothesis;
+        end
         
         function adhocDomainStruct = create_adhoc_domain_struct(domainStructHypothesis, hypothesisSelected)
             adhocDomainStruct = domainStructHypothesis{hypothesisSelected};

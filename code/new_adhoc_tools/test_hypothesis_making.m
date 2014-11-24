@@ -1,19 +1,18 @@
 clean 
-seed = 1;
+seed = 0;
 
 %%
 init_random_seed(seed);
 
 %% generate hypothesis
-gridSize = 7;
+gridSize = 5;
 noiseLevel = 0.2;
 
 % teams of predators
 allCardinalOrders = generate_cardinal_orders(2); % max 24
-% allComTypes = {'absolute'};
 allComTypes = {'absolute', 'relative'};
 allComMappings = generate_mappings(gridSize, 2); % max too big
-comNoiseLevel = 0.2;
+comNoiseLevel = 0;
 
 allPredators = generate_partial_obs_com_predators_teams(allCardinalOrders, allComTypes, allComMappings, comNoiseLevel);
 
@@ -37,9 +36,6 @@ initDomainState = domain.get_domain_state();
 adhocDomain = AdhocAgent.create_adhoc_domain(domainStructHypothesis, hypothesisSelected);
 adhocDomain.load_domain_state(initDomainState)
 
-% domain = create_domain_from_struct(domainStructHypothesis{hypothesisSelected});
-% domain.load_domain_state(adhocDomain.get_domain_state())
-
 %% log init
 rec = Logger();
 rec.logit(seed)
@@ -60,17 +56,14 @@ while ~adhocDomain.is_prey_locked_at_locking_state()
     ordering = adhocDomain.generate_random_ordering_prey_last(); stepLog.logit(ordering);    
     adhocDomain.update_agents_messages(); % for now the order of messages does not matter
     
-    
-    %%here, need to do this for each hypothetic domain, take inspiration
-    %%from AdhocAgent.update_hypothesis_proba
-    [preyStateProba, allPreyStateProba] = PartialObsAgentCom.decode_all_agent_messages(adhocDomain);
-    rec.log_in_cell('preyStateProba', preyStateProba)
-    rec.log_in_cell('allPreyStateProba', allPreyStateProba)
-    
     %% get domain state after message updated
     domainState = adhocDomain.get_domain_state(); rec.logit(domainState);
+            
+    %% update proba from message
+    logProbaHypothesisUpdateMessage = adhocDomain.agents{1}.compute_hypothesis_log_update_from_message(domainState);    
+    adhocDomain.agents{1}.update_hypothesis_proba(logProbaHypothesisUpdateMessage)
 
-    %% collect and pally actions 
+    %% collect and aplly actions 
     agentsActions = adhocDomain.collect_agents_actions(stepLog);  
     adhocDomain.apply_agents_actions(agentsActions, ordering)
     
@@ -78,11 +71,15 @@ while ~adhocDomain.is_prey_locked_at_locking_state()
     drawnow
     
     %% update hypothesis proba
-    adhocDomain.agents{1}.update_hypothesis_proba(domainState, adhocDomain.get_domain_state(), ordering)    
+
+    logProbaHypothesisUpdateState = adhocDomain.agents{1}.compute_hypothesis_log_update_from_state(domainState, adhocDomain.get_domain_state(), ordering);    
+    adhocDomain.agents{1}.update_hypothesis_proba(logProbaHypothesisUpdateState)    
  
     rec.logit(stepLog)
     
     %% some morelog
+    rec.logit(logProbaHypothesisUpdateState)
+    rec.logit(logProbaHypothesisUpdateMessage)   
     rec.log_field('logProbaHypothesis', adhocDomain.agents{1}.logProbaHypothesis)
     rec.log_field('probaHypothesis', adhocDomain.agents{1}.probaHypothesis)   
     
