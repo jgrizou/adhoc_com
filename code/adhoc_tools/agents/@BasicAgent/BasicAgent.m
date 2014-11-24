@@ -3,7 +3,6 @@ classdef BasicAgent < matlab.mixin.Copyable
     
     properties
         id
-        
         color = get_random_color()
     end
     
@@ -19,40 +18,46 @@ classdef BasicAgent < matlab.mixin.Copyable
             state = domain.get_agent_state(self.id);
         end
         
-        function draw(self, domain)
-            if ~isempty(self.get_state(domain))
-                if ~isempty(self.id)
-                    domain.environment.drawer.draw_square(self.get_state(domain), [1,1,1], num2str(self.id))
-                end
-                posId = domain.environment.drawer.get_id(self.get_state(domain));
-                domain.environment.drawer.draw_dot(posId, self.color)
-            end
+        function action = compute_action(self, domain, recorder)
+            actionProba = self.compute_action_proba(domain, recorder);
+            action = sample_action_discrete_policy(actionProba, 1); recorder.logit(action)
         end
         
-        function action = compute_action(self, domain)
-            actionProba = self.compute_action_proba(domain);
-            action = sample_action_discrete_policy(actionProba, 1);
-        end
-        
-        function actionProba = compute_action_proba(self, domain)
-            targetState = self.compute_target_state(domain);
-            actionProba = self.compute_action_proba_to_reach_target_state(domain, targetState);
-        end
-        
-        function actionProba = compute_action_proba_to_reach_target_state(self, domain, targetState)
+        function actionProba = compute_action_proba(self, domain, recorder)
             agentState = self.get_state(domain);
-            if all(agentState == targetState) % just for the speed up
-                actionProba = [0 0 0 0 1]; % don't move
-            else
-                neighborStates = domain.environment.get_neighbor_states(agentState);
-                if is_member_optimized_row_one_state_several_states(targetState, neighborStates) % just for the speed up
-                    action = domain.environment.get_action_to_neighbor_state(agentState, targetState);
-                    actionProba = zeros(1,5);
-                    actionProba(action) = 1;
-                else
-                    actionProba = domain.compute_optimal_action_proba(self.get_state(domain), targetState);
-                end
+            stateReward = self.compute_state_reward(domain); recorder.logit(stateReward)
+            obstacleProba = self.compute_obstacle_proba(domain, stateReward); recorder.logit(obstacleProba)
+            actionProba = domain.compute_optimal_action_proba(agentState, stateReward, obstacleProba); recorder.logit(actionProba)
+        end
+        
+        function stateReward = compute_state_reward(self, domain)
+            targetStates = self.compute_target_states(domain);
+            stateReward = self.state_reward_from_target_states(domain, targetStates);
+        end
+        
+        function stateReward = state_reward_from_target_states(~, domain, targetStates)
+            stateReward = domain.environment.get_empty_state_reward();
+            stateReward(targetStates) = 1;
+        end
+        
+        function obstacleProba = compute_obstacle_proba(~, domain, stateReward)
+            obstacleProba = domain.environment.get_empty_obstacle_proba();
+            occupiedStates = domain.get_occupied_states();
+            toFreeState = find(stateReward > 0);
+            obstacleState = setdiff(occupiedStates, toFreeState);
+            obstacleProba(obstacleState) = 1;
+        end
+        
+        
+        
+        %%
+        function draw(self, domain)
+            agentState = self.get_state(domain);
+            if ~isempty(self.id)
+                agentPosition = domain.environment.state_to_position(agentState);
+                domain.environment.drawer.draw_square(agentPosition, [1,1,1], num2str(self.id))
             end
+            domain.environment.drawer.draw_dot(agentState, self.color)
         end
         
     end

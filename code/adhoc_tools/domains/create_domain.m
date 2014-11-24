@@ -1,9 +1,9 @@
 function domain = create_domain(gridSize, noiseLevel, predators, prey)
 %CREATE_DOMAIN
 
-environment = ToroidalGrid(gridSize);
+environment = ToroidalGridMDP(gridSize, noiseLevel);
 lockingState = environment.get_random_state();
-domain = PursuitDomain(environment, lockingState, noiseLevel);
+domain = PursuitDomain(environment, lockingState);
 
 for i = 1:length(predators)
     domain.add_predator(predators{i});

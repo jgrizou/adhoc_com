@@ -12,9 +12,9 @@ classdef CardinalAgent < BasicAgent
             self.cardinal = cardinal;
         end
         
-        function targetState = compute_target_state(self, domain)
+        function targetStates = compute_target_states(self, domain)
             preyState = domain.get_prey_state();            
-            targetState = domain.environment.eval_next_state(preyState, self.cardinal);
+            targetStates = domain.environment.eval_next_state_no_noise(preyState, self.cardinal);
         end
                 
     end

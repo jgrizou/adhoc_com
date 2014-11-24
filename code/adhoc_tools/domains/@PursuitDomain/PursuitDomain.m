@@ -1,36 +1,33 @@
 classdef PursuitDomain < matlab.mixin.Copyable
     
     properties
-        environment
-        
-        noiseLevel
+        environment        
         maxErr = 1e-10;
         
         agents = {}
         agentsStates = []
+        agentsMessages = []
         
         predatorsIdx = []
         preyIdx = []
         
         lockingState
-        
-        agentsMessages
-        
+                
     end
     
     methods
-        function self = PursuitDomain(environment, lockingState, noiseLevel)
+        function self = PursuitDomain(environment, lockingState)
             self.environment = environment;
             self.lockingState = lockingState;
-            self.noiseLevel = noiseLevel;
         end
         
         function add_predator(self, predator)
             self.agents{end+1} = predator;
             id = length(self.agents);
-            self.predatorsIdx(end+1) = id;
+            self.predatorsIdx(end+1,1) = id;
             predator.id = id;
-            self.agentsStates(end+1,:) = zeros(1,2);
+            self.agentsStates(end+1,1) = 0;
+            self.agentsMessages(end+1,1) = 0;
         end
         
         function add_prey(self, prey)
@@ -39,7 +36,8 @@ classdef PursuitDomain < matlab.mixin.Copyable
                 id = length(self.agents);
                 self.preyIdx = id;
                 prey.id = id;
-                self.agentsStates(end+1,:) = zeros(1,2);
+                self.agentsStates(end+1,1) = 0;
+                self.agentsMessages(end+1,1) = 0;
             else
                 warning('You can only have one prey')
             end
@@ -50,21 +48,18 @@ classdef PursuitDomain < matlab.mixin.Copyable
             % assign random states
             for i = 1:length(self.agents)
                 self.set_agent_state(i,self.environment.get_random_state());
-            end
-            
+            end            
             %repeat while init not okay
             if ~self.check_states()
                 self.init()
             end
-            % init messages
-            self.clean_messages()
         end
         
         function areStatesValid = check_states(self)
             areStatesValid = false;
             % check agents' states are different
             occupiedStates = self.get_occupied_states();
-            if size(unique(occupiedStates, 'rows'), 1) ~= size(occupiedStates,1)
+            if length(unique(occupiedStates)) ~= length(occupiedStates)
                 return
             end
             %  if it wenty through it is valid
@@ -72,9 +67,11 @@ classdef PursuitDomain < matlab.mixin.Copyable
         end
                 
         %%
-        function iterate(self, ordering)
-            self.update_agents_messages(); % for now the order of messages does not matter
-            agentsActions = self.collect_agents_actions();
+        function recorder = iterate(self, ordering, recorder)
+            self.update_agents_messages();
+            recorder.log_field('domainState', self.get_domain_state())
+
+            agentsActions = self.collect_agents_actions(recorder); 
             self.apply_agents_actions(agentsActions, ordering)
             
             if ~self.check_states()
@@ -93,45 +90,54 @@ classdef PursuitDomain < matlab.mixin.Copyable
             end
         end
         
-        function add_message(self, agentIdx, message)
-            self.agentsMessages{agentIdx} = message;
+        function add_message(self, agentIdx, agentMessage)
+            self.agentsMessages(agentIdx) = agentMessage;
+        end
+        
+        function agentMessage = get_message(self, agentIdx)
+            agentMessage = self.agentsMessages(agentIdx);
         end
         
         function clean_messages(self)
-            self.agentsMessages = cell(length(self.agents),1);
+            self.agentsMessages = zeros(length(self.agents),1);
         end
         
-        function agentsMessages = get_messages(self)
+        function agentsMessages = get_all_messages(self)
             agentsMessages = self.agentsMessages;
         end
         
-        function set_messages(self, agentsMessages)
+        function set_all_messages(self, agentsMessages)
             self.agentsMessages = agentsMessages;
         end
         
         %%
-        function agentsActions = collect_agents_actions(self)
+        function agentsActions = collect_agents_actions(self, recorder)
             agentsActions = zeros(length(self.agents), 1);
             for i = 1:length(self.agents)
-                agentsActions(i) = self.agents{i}.compute_action(self);
+                agentLog = Logger();
+                agentsActions(i) = self.agents{i}.compute_action(self, agentLog);
+                recorder.logit(agentLog)
             end
         end
         
-        function agentsActionsProba = collect_agents_actions_proba(self)
+        function agentsActionsProba = collect_agents_actions_proba(self, recorder)
             agentsActionsProba = zeros(length(self.agents), self.environment.nActions);
             for i = 1:length(self.agents)
-                agentsActionsProba(i, :) = self.agents{i}.compute_action_proba(self);
+                agentLog = Logger();
+                agentsActionsProba(i, :) = self.agents{i}.compute_action_proba(self, agentLog);
+                recorder.logit(agentLog)
             end
         end
         
         function apply_agents_actions(self, agentsActions, ordering)
-            for i = ordering
-                self.apply_agent_action(i, agentsActions(i))
+            for i = 1:length(ordering)
+                agentIdx = ordering(i);
+                self.apply_agent_action(agentIdx, agentsActions(agentIdx))
             end
         end
         
-        function apply_agent_action(self, agentIdx, action)
-            nextState = self.environment.eval_next_state(self.get_agent_state(agentIdx), action);
+        function apply_agent_action(self, agentIdx, action)            
+            nextState = self.environment.eval_next_state_no_noise(self.get_agent_state(agentIdx), action);
             if ~self.is_state_occupied(nextState)
                 self.set_agent_state(agentIdx, nextState);
             end
@@ -151,25 +157,32 @@ classdef PursuitDomain < matlab.mixin.Copyable
             preyState = self.get_agent_state(self.preyIdx);
         end
         
+        function predatorsStates = get_predators_states(self)
+           predatorsStates = zeros(length(self.predatorsIdx), 1);
+           for i = 1:length(self.predatorsIdx)
+               predatorsStates(i) = self.get_agent_state(self.predatorsIdx(i));
+           end
+        end
+        
         function state = get_agent_state(self, agentIdx)
-            state = self.agentsStates(agentIdx, :);
+            state = self.agentsStates(agentIdx);
         end
-        
+                
         function set_agent_state(self, agentIdx, state)
-            self.agentsStates(agentIdx, :) = state;
+            self.agentsStates(agentIdx) = state;
         end
-        
 
         %%
         function occupiedStates = get_occupied_states(self)
-            occupiedStates = zeros(length(self.agents), 2);
+            occupiedStates = zeros(size(self.agentsStates));
             for i = 1:length(self.agents)
-                occupiedStates(i, :) = self.get_agent_state(i);
+                occupiedStates(i) = self.get_agent_state(i);
             end
         end
         
+        
         function isOccupied = is_state_occupied(self, state)
-            if is_member_optimized_row_one_state_several_states(state, self.get_occupied_states())
+            if any(state == self.get_occupied_states())
                 isOccupied = true;
             else
                 isOccupied = false;
@@ -179,7 +192,7 @@ classdef PursuitDomain < matlab.mixin.Copyable
         function freeNeighborStates = get_free_neighbor_states(self, state)
             occupiedStates = self.get_occupied_states();
             neighborStates = self.environment.get_neighbor_states(state);
-            freeNeighborStates = setdiff(neighborStates,occupiedStates, 'rows');
+            freeNeighborStates = setdiff(neighborStates,occupiedStates);
         end
         
         %%
@@ -193,7 +206,7 @@ classdef PursuitDomain < matlab.mixin.Copyable
         
         function isLocked = is_prey_locked_at_locking_state(self)
             isLocked = false;
-            if self.is_prey_locked() && ismember(self.get_prey_state(), self.lockingState, 'rows')
+            if self.is_prey_locked() && self.get_prey_state() == self.lockingState
                 isLocked = true;
             end
         end
@@ -204,30 +217,21 @@ classdef PursuitDomain < matlab.mixin.Copyable
             for i = 1:size(visibleAreaActionSequence,1)
                 state = startState;
                 for j = 1:size(visibleAreaActionSequence,2)
-                    state = self.environment.eval_next_state(state, visibleAreaActionSequence(i,j));
+                    state = self.environment.eval_next_state_no_noise(state, visibleAreaActionSequence(i,j));
                 end
                 visibleStates(i,:) = state;
             end
-            visibleStates = unique(visibleStates, 'rows');
+            visibleStates = unique(visibleStates);
         end
 
         %%
-        function actionProba = compute_optimal_action_proba(self, initState, targetState)
-            [optimalPolicy, ~]  = self.compute_optimal_policy(targetState);
-            initMDPState = ToroidalGridMDP.position_to_state(self.environment.gridSize,initState);
-            actionProba = full(optimalPolicy(initMDPState,:));
+        function actionProba = compute_optimal_action_proba(self, initState, targetStateProba, obstacleProba)
+            [optimalPolicy, ~]  = self.compute_optimal_policy(targetStateProba, obstacleProba);
+            actionProba = full(optimalPolicy(initState,:));
         end
         
-        function [optimalPolicy, MDP] = compute_optimal_policy(self, targetState)
-            MDP = self.environment.generate_toroidal_mdp(self.noiseLevel);
-            for i = 1:length(self.agents)
-                agentState = self.get_agent_state(i);
-                if ~all(agentState == targetState)
-                    MDP.add_obstacle_at_position(agentState)
-                end
-            end
-            MDP.set_unitary_sparse_reward_at_position(targetState)
-            MDP.build_MDP()
+        function [optimalPolicy, MDP] = compute_optimal_policy(self, targetStateProba, obstacleProba)
+            MDP = self.environment.get_noise_mdp_with_obstacle_and_reward(targetStateProba, obstacleProba);
             [~, optimalPolicy] = VI(MDP, self.maxErr);
         end
         
@@ -236,14 +240,14 @@ classdef PursuitDomain < matlab.mixin.Copyable
         function domainState = get_domain_state(self)
             domainState = struct;
             %predators states
-            domainState.predatorsStates = zeros(length(self.predatorsIdx), 2);
+            domainState.predatorsStates = zeros(length(self.predatorsIdx), 1);
             for i = self.predatorsIdx
-                domainState.predatorsStates(i, :) = self.get_agent_state(i);
+                domainState.predatorsStates(i) = self.get_agent_state(i);
             end
             %prey state
             domainState.preyState = self.get_prey_state();
             %set message
-            domainState.agentMessages = self.get_messages();
+            domainState.agentMessages = self.get_all_messages();
         end
         
         function load_domain_state(self, domainState)
@@ -251,19 +255,19 @@ classdef PursuitDomain < matlab.mixin.Copyable
             % agents are in the same ordering
             %load predator state
             for i = self.predatorsIdx
-                self.set_agent_state(i, domainState.predatorsStates(i, :));
+                self.set_agent_state(i, domainState.predatorsStates(i));
             end
             %load prey state
             self.set_agent_state(self.preyIdx, domainState.preyState);
             %set message
-            self.set_messages(domainState.agentMessages)
+            self.set_all_messages(domainState.agentMessages)
         end
-        
+             
         function logProbaNextDomainState = compute_log_proba_next_domain_state(self, nextDomainState, ordering)
             logProbaNextDomainState = -Inf;
             %simulate agent action given messages
-            agentsActionsProba = self.collect_agents_actions_proba();
-            noiseActionProba = ToroidalGridMDP.generate_all_actions_proba(self.noiseLevel);
+            agentsActionsProba = self.collect_agents_actions_proba(Logger());
+            noiseActionProba = self.environment.generate_all_actions_proba();
             %merged them so next step will be faster
             mergedAgentsActionsProba = agentsActionsProba * noiseActionProba;
             %generating all possible cases, here we assume there is 5 agents!!
@@ -276,10 +280,11 @@ classdef PursuitDomain < matlab.mixin.Copyable
             %go through all possible next states and add proba when similar
             for i = 1:size(actionsIndexes, 1)
                 logProba = PursuitDomain.log_proba_from_action_indexe(mergedAgentsActionsProba, actionsIndexes(i, :));
-                if logProba > -Inf                    
+                if ~isinf(logProba)                
                     domainCopy = copy(self);
-                    for j = ordering
-                        domainCopy.apply_agent_action(j, actionsIndexes(i, j))
+                    for j = 1:length(ordering)
+                        agentIdx = ordering(j);
+                        domainCopy.apply_agent_action(agentIdx, actionsIndexes(i, agentIdx))
                     end
                     % if same domain state increase proba
                     if PursuitDomain.are_domain_states_equal(domainCopy.get_domain_state(), nextDomainState)
@@ -289,15 +294,14 @@ classdef PursuitDomain < matlab.mixin.Copyable
             end
         end
         
-        
         %%
         function draw(self)
             %draw grid
+            self.environment.drawer.reset_colors()
             self.environment.drawer.draw()
             hold on
             %draw locking state
-            posId = self.environment.drawer.get_id(self.lockingState);
-            self.environment.drawer.draw_dot(posId, get_nice_color('b'))
+            self.environment.drawer.draw_dot(self.lockingState, get_nice_color('b'))
             %draw agent
             for i = 1:length(self.agents)
                 self.agents{i}.draw(self);
@@ -311,22 +315,12 @@ classdef PursuitDomain < matlab.mixin.Copyable
         function areEqual = are_domain_states_equal(domainState1, domainState2)
             areEqual = true;
             %predators
-            if size(domainState1.predatorsStates,1) ~= size(domainState2.predatorsStates,1)
+            if any(domainState1.predatorsStates ~= domainState2.predatorsStates)
                 areEqual = false;
                 return
-            end
-            for i = 1:length(domainState1.predatorsStates)
-                if ~ismember(domainState1.predatorsStates(i, :), domainState2.predatorsStates(i, :), 'rows')
-                    areEqual = false;
-                    return
-                end
             end
             %prey
-            if size(domainState1.preyState, 1) ~= size(domainState2.preyState, 1)
-                areEqual = false;
-                return
-            end
-            if ~all(domainState1.preyState == domainState2.preyState) % assumes one prey
+            if domainState1.preyState ~= domainState2.preyState
                 areEqual = false;
                 return
             end

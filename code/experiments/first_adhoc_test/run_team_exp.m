@@ -12,17 +12,23 @@ while true
     add_counter(cnt)
     tic
         
+    stepLog = Logger();
+    
     %% iterate
-    ordering = domain.generate_random_ordering_prey_last(); rec.logit(ordering);    
+    ordering = domain.generate_random_ordering_prey_last(); stepLog.logit(ordering);    
     domain.update_agents_messages(); % for now the order of messages does not matter
     
     %% get domain state after message updated
-    domainState = domain.get_domain_state(); rec.logit(domainState);
-
-    %% collect and aplly actions 
-    agentsActions = domain.collect_agents_actions();  
-    domain.apply_agents_actions(agentsActions, ordering)   
-                     
+    domainState = domain.get_domain_state();
+    
+    %% collect and apply actions 
+    agentsActions = adhocDomain.collect_agents_actions(stepLog);  
+    adhocDomain.apply_agents_actions(agentsActions, ordering)
+                         
+    %% some log
+    rec.logit(stepLog)
+    rec.logit(domainState)
+    
     loopTime = toc; rec.logit(loopTime)    
     remove_counter(cnt)
     

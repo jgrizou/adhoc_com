@@ -11,7 +11,7 @@ classdef RandomAgent < BasicAgent
             end
             self@BasicAgent(color)           
         end
-                
+        
         function actionProba = compute_action_proba(~, domain)
             actionProba = proba_normalize_row(ones(1,domain.environment.nActions));
         end

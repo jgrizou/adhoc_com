@@ -14,47 +14,54 @@ classdef CardinalTaskAgent < CardinalAgent
             self.stucker = stucker;
         end
         
-        function targetState = compute_target_state(self, domain)
+        function targetStates = compute_target_states(self, domain)
             [nonStuckerState, stuckerState] = ...
                 CardinalTaskAgent.get_cardinal_state_to_reach(domain.environment, ...
                                                                 domain.lockingState, ...
                                                                 domain.get_prey_state());            
             if self.stucker
-                targetState = stuckerState(self.cardinal,:);
+                targetStates = stuckerState(self.cardinal);
             else
-                targetState = nonStuckerState(self.cardinal,:);
+                targetStates = nonStuckerState(self.cardinal);
             end
-        end       
+        end
     end
     
     methods(Static)
         
         function [nonStuckerState, stuckerState] = get_cardinal_state_to_reach(environment, lockingState, preyState)      
-            nonStuckerState = zeros(4,2);
-            stuckerState = zeros(4,2);            
+            nonStuckerState = zeros(4,1);
+            stuckerState = zeros(4,1);
+            
             for iCardinal = 1:4
-                targetState = environment.eval_next_state(preyState, iCardinal);
+                targetState = environment.eval_next_state_no_noise(preyState, iCardinal);
                 % stucker
                 stuckerState(iCardinal, :) = targetState;
                 % non stucker
+                preyPosition = environment.state_to_position(preyState);
+                lockingPosition = environment.state_to_position(lockingState);
                 if iCardinal == 1
-                    if preyState(1) ~= lockingState(1)
-                        targetState(1) = targetState(1) + 1;
+                    if preyPosition(1) ~= lockingPosition(1)
+                        %% leave one square free for the prey to move
+                        targetState = environment.eval_next_state_no_noise(targetState, iCardinal);
                     end
                 elseif iCardinal == 2
-                    if preyState(1) ~= lockingState(1)
-                        targetState(1) = targetState(1) - 1;
+                    if preyPosition(1) ~= lockingPosition(1)
+                        %% leave one square free for the prey to move
+                        targetState = environment.eval_next_state_no_noise(targetState, iCardinal);
                     end
                 elseif iCardinal == 3
-                    if preyState(2) ~= lockingState(2)
-                        targetState(2) = targetState(2) + 1;
+                    if preyPosition(2) ~= lockingPosition(2)
+                        %% leave one square free for the prey to move
+                        targetState = environment.eval_next_state_no_noise(targetState, iCardinal);
                     end
                 elseif iCardinal == 4
-                    if preyState(2) ~= lockingState(2)
-                        targetState(2) = targetState(2) - 1;
+                    if preyPosition(2) ~= lockingPosition(2)
+                        %% leave one square free for the prey to move
+                        targetState = environment.eval_next_state_no_noise(targetState, iCardinal);
                     end
                 end
-                nonStuckerState(iCardinal, :) = environment.format_state(targetState);               
+                nonStuckerState(iCardinal, :) = targetState;
             end
         end
         

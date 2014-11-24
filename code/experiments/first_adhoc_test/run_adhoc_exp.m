@@ -12,23 +12,34 @@ while true
     add_counter(cnt)
     tic
     
+    stepLog = Logger();
+    
     %% iterate
-    ordering = adhocDomain.generate_random_ordering_prey_last(); rec.logit(ordering);    
+    ordering = adhocDomain.generate_random_ordering_prey_last(); stepLog.logit(ordering);    
     adhocDomain.update_agents_messages(); % for now the order of messages does not matter
     
     %% get domain state after message updated
-    domainState = adhocDomain.get_domain_state(); rec.logit(domainState);
+    domainState = adhocDomain.get_domain_state(); 
+    
+    %% update proba from message
+    logProbaHypothesisUpdateMessage = adhocDomain.agents{1}.compute_hypothesis_log_update_from_message(domainState);    
+    adhocDomain.agents{1}.update_hypothesis_proba(logProbaHypothesisUpdateMessage)
 
-    %% collect and aplly actions 
-    agentsActions = adhocDomain.collect_agents_actions();  
-    adhocDomain.apply_agents_actions(agentsActions, ordering)      
+    %% collect and apply actions 
+    agentsActions = adhocDomain.collect_agents_actions(stepLog);  
+    adhocDomain.apply_agents_actions(agentsActions, ordering)
     
     %% update hypothesis proba
-    adhocDomain.agents{1}.update_hypothesis_proba(domainState, adhocDomain.get_domain_state(), ordering)    
- 
-    %% some morelog
+    logProbaHypothesisUpdateState = adhocDomain.agents{1}.compute_hypothesis_log_update_from_state(domainState, adhocDomain.get_domain_state(), ordering);    
+    adhocDomain.agents{1}.update_hypothesis_proba(logProbaHypothesisUpdateState)  
+    
+    %% some log
+    rec.logit(stepLog)
+    rec.logit(domainState)
+    rec.logit(logProbaHypothesisUpdateState)
+    rec.logit(logProbaHypothesisUpdateMessage)
     rec.log_field('logProbaHypothesis', adhocDomain.agents{1}.logProbaHypothesis)
-    rec.log_field('probaHypothesis', adhocDomain.agents{1}.probaHypothesis)    
+    rec.log_field('probaHypothesis', adhocDomain.agents{1}.probaHypothesis)      
                 
     loopTime = toc; rec.logit(loopTime)    
     remove_counter(cnt)

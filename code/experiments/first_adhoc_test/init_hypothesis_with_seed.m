@@ -1,7 +1,4 @@
 function rec = init_hypothesis_with_seed(seed)
-%INIT_WITH_SEED 
-
-rec = Logger();
 
 init_random_seed(seed); 
 
@@ -33,8 +30,8 @@ domain = create_domain_from_struct(domainStructHypothesis{hypothesisSelected});
 domain.init()
 initDomainState = domain.get_domain_state();
 
-
 %% log init
+rec = Logger();
 rec.logit(seed)
 rec.logit(domainStructHypothesis)
 rec.logit(hypothesisSelected)
