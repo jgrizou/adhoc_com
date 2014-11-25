@@ -22,8 +22,8 @@ while true
     domainState = domain.get_domain_state();
     
     %% collect and apply actions 
-    agentsActions = adhocDomain.collect_agents_actions(stepLog);  
-    adhocDomain.apply_agents_actions(agentsActions, ordering)
+    agentsActions = domain.collect_agents_actions(stepLog);  
+    domain.apply_agents_actions(agentsActions, ordering)
                          
     %% some log
     rec.logit(stepLog)
