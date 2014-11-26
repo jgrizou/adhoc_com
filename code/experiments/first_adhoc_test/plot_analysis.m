@@ -17,7 +17,7 @@ for iMethod = 1:nMethod
     load(methodLogs{iMethod})        
     iterations(iMethod, 1:length(log.time_to_capture), 1) = log.time_to_capture;
     iterations(iMethod, 1:length(log.time_to_capture), 2) = log.time_to_capture;
-    methodNames{iMethod} = strgsub(log.expFolderName, '_', ' ');    
+    methodNames{iMethod} = strgsub(log.methodName, '_', ' ');    
 end
 
 %% 
@@ -30,8 +30,7 @@ set(0,'DefaultAxesFontWeight','bold')
 set(0,'DefaultAxesLineWidth', 2.5)
 
 
-figPositionSquare = [2386 46 1089 913];
-figPositionFullWidth = [1667 541 1853 672];
+figPositionSquare = [700, 100, 1000, 800];
 
 OutlierMarker = 'x';
 OutlierMarkerSize = 10;

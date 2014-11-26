@@ -16,4 +16,4 @@ Log    = /projects/agents5/grizou/output/$(Process).log
 +Project="AI_ROBOTICS"
 +ProjectDescription="Research on ad hoc team agents"
 
-Queue 10
+Queue 100
