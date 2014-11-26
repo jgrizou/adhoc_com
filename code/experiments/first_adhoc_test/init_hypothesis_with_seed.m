@@ -4,13 +4,13 @@ init_random_seed(seed);
 
 %% generate hypothesis
 gridSize = 7;
-noiseLevel = 0;
+noiseLevel = 0.1;
 
 % teams of predators
 allCardinalOrders = generate_cardinal_orders(10);
 allComTypes = {'absolute', 'relative'};
-allComMappings = generate_mappings(gridSize, 1);
-comNoiseLevel = 0;
+allComMappings = generate_mappings(gridSize, 4);
+comNoiseLevel = 0.1;
 
 allPredators = generate_partial_obs_com_predators_teams(allCardinalOrders, allComTypes, allComMappings, comNoiseLevel);
 

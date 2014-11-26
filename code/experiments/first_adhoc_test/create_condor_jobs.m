@@ -5,7 +5,7 @@ jobFolder = fullfile(pathstr, 'condor_jobs');
 ensure_new_folder(jobFolder)
 
 %%
-nJobs = 100;
+nJobs = 500;
 
 for i = 1:nJobs
     
