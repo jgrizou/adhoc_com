@@ -29,4 +29,4 @@ generate_condor_script(condorFilename, jobFolder)
 %%
 scriptFilename = fullfile(pathstr, 'copy_condor_results.sh');
 resultFolder = fullfile(pathstr, 'results');
-generate_scp_script(scriptFilename, resultFolder)
+generate_rsync_script(scriptFilename, resultFolder)
