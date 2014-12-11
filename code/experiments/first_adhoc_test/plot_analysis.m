@@ -43,7 +43,7 @@ WidthS = 0.9;
 labelNames = {'',''};
 
 cstColor = 0.2;
-dimColor = [get_nice_color('b');get_nice_color('r')];
+dimColor = [get_nice_color('b');get_nice_color('r');get_nice_color('g')];
 % ;...
 %     get_nice_color('g')-cstColor;get_nice_color('g')];
 legendNames = methodNames;
@@ -70,7 +70,8 @@ set(legh,'linewidth',1);
 % hold on
 % plot([0, 10], [251, 251], 'k--')
 xlim([0.7, 1.3])
-ylim([0 40])
+% ylim([0 40])
+ylim([0 110])
 set(gca, 'box', 'off')
 
 %%
