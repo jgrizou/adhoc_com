@@ -10,3 +10,7 @@ code/experiments/first_adhoc_test/results
 old_adhoc_tools
 code/experiments/first_adhoc_test/analysis
 code/experiments/first_adhoc_test/plots
+code/experiments/dev/analysis
+code/experiments/dev/plots
+code/experiments/dev/results
+paper
