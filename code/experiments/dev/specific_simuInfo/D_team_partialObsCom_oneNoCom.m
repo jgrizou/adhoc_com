@@ -1,4 +1,4 @@
-simuInfo.predatorType = 'partialObsCom'; % fullObs, partialObs, partialObsCom, partialObsComOneNoCom
+simuInfo.predatorType = 'partialObsComOneNoCom'; % fullObs, partialObs, partialObsCom, partialObsComOneNoCom
 simuInfo.nCardinalConfiguration = simuInfo.defaultNCardinalConfiguration;
 
 simuInfo.nLockingState = simuInfo.defaultNLockingState;
@@ -7,10 +7,10 @@ simuInfo.comType = {'absolute', 'relative'};
 simuInfo.nComMapping = simuInfo.defaultNComMapping;
 
 %
-simuInfo.expType = 'adhoc'; %adhoc, team
-simuInfo.adhocUseCom = false;
+simuInfo.expType = 'team'; %adhoc, team
+simuInfo.adhocUseCom = true;
 simuInfo.adhocUseObs = true;
 
 %
 [~, filename, ~] = fileparts(mfilename('fullpath'));
-simuInfo.settingName = filename;
+simuInfo.settingName = filename(3:end);

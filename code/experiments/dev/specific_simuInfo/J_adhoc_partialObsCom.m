@@ -13,4 +13,4 @@ simuInfo.adhocUseObs = true;
 
 %
 [~, filename, ~] = fileparts(mfilename('fullpath'));
-simuInfo.settingName = filename;
+simuInfo.settingName = filename(3:end);

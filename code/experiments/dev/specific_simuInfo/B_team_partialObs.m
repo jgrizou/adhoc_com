@@ -4,10 +4,10 @@ simuInfo.nCardinalConfiguration = simuInfo.defaultNCardinalConfiguration;
 simuInfo.nLockingState = simuInfo.defaultNLockingState;
 
 %
-simuInfo.expType = 'adhoc'; %adhoc, team
+simuInfo.expType = 'team'; %adhoc, team
 simuInfo.adhocUseCom = false;
 simuInfo.adhocUseObs = true;
 
 %
 [~, filename, ~] = fileparts(mfilename('fullpath'));
-simuInfo.settingName = filename;
+simuInfo.settingName = filename(3:end);
