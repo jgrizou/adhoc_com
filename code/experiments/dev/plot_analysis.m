@@ -7,7 +7,7 @@ methodLogs = getfilenames(analysisFolder, 'refiles', '*.mat');
 nMethod = length(methodLogs);
 
 %%
-maxExp = 1000;
+maxExp = 10000;
 iterations = nan(nMethod, maxExp, 2);
 methodNames = cell(1, nMethod);
 
@@ -75,9 +75,9 @@ set(legh,'linewidth',1);
 % 
 % hold on
 % plot([0, 10], [251, 251], 'k--')
-xlim([0.7, 1.3])
+% xlim([0.7, 1.3])
 % ylim([0 40])
-ylim([0 110])
+% ylim([0 110])
 set(gca, 'box', 'off')
 
 %%
