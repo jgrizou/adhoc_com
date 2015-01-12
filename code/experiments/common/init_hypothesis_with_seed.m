@@ -9,7 +9,7 @@ init_random_seed(seed);
 nHypothesis = length(domainStructHypothesis);
 hypothesisSelected = randi(nHypothesis);
 
-%% inint the domain - set the seed so it is the same init state for all domain with such seed
+%% init the domain - set the seed so it is the same init state for all domain with such seed
 init_random_seed(seed); 
 domain = create_domain_from_struct(domainStructHypothesis{hypothesisSelected});
 domain.init()

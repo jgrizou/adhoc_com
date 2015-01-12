@@ -82,9 +82,9 @@ set(gca, 'box', 'off')
 
 %%
 
-plotFolder = fullfile(pathstr, 'plots');
-plotFormats = {'png', 'eps'};
-plotFilenames = {'timeCapture'};
-
-save_all_images(plotFolder, plotFormats, plotFilenames)
+% plotFolder = fullfile(pathstr, 'plots');
+% plotFormats = {'png', 'eps'};
+% plotFilenames = {'timeCapture'};
+% 
+% save_all_images(plotFolder, plotFormats, plotFilenames)
  

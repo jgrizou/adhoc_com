@@ -21,30 +21,63 @@ fieldToCompare = 'time_to_capture';
 
 %%
 
-
 figPos3 = [2200,100,600,1000];
 
+plotFolder = fullfile(pathstr, '../../../paper/plots');
+plotFormats = {'png', 'eps'};
+
+
+
+%%
+figure('position', figPos3)
+methodId = [9,1];
+[bh, ph] = plot_analysis_for_methods(allMethodCells, methodId, fieldToCompare);
+ylim([0,35])
+
+plotFilenames = {'fullObs'};
+save_all_images(plotFolder, plotFormats, plotFilenames)
+close all
+
+%%
+figure('position', figPos3)
+methodId = [9,10];
+[bh, ph] = plot_analysis_for_methods(allMethodCells, methodId, fieldToCompare);
+ylim([0,210])
+
+plotFilenames = {'teamObsPartial'};
+save_all_images(plotFolder, plotFormats, plotFilenames)
+close all
+
+%%
+figure('position', figPos3)
+methodId = [9,11,12];
+[bh, ph] = plot_analysis_for_methods(allMethodCells, methodId, fieldToCompare);
+ylim([0,35])
+
+plotFilenames = {'teamObsPartialCom'};
+save_all_images(plotFolder, plotFormats, plotFilenames)
+close all
 
 %%
 figure('position', figPos3)
 methodId = [11,3,12];
 [bh, ph] = plot_analysis_for_methods(allMethodCells, methodId, fieldToCompare);
+ylim([0,35])
 
+plotFilenames = {'PartialCom'};
+save_all_images(plotFolder, plotFormats, plotFilenames)
+close all
 
-figure('position', figPos3)
-methodId = [9,10,11,12];
-[bh, ph] = plot_analysis_for_methods(allMethodCells, methodId, fieldToCompare);
-
-figure('position', figPos3)
-methodId = [1,2,3];
-[bh, ph] = plot_analysis_for_methods(allMethodCells, methodId, fieldToCompare);
-
+%%
 figure('position', figPos3)
 methodId = [3,4,5,6];
 [bh, ph] = plot_analysis_for_methods(allMethodCells, methodId, fieldToCompare);
+ylim([0,35])
 
-figure('position', figPos3)
-methodId = [3,7,8];
-[bh, ph] = plot_analysis_for_methods(allMethodCells, methodId, fieldToCompare);
+plotFilenames = {'AdhocMethods'};
+save_all_images(plotFolder, plotFormats, plotFilenames)
+close all
+
+
 
 
