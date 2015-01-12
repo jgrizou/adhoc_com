@@ -12,8 +12,9 @@ classdef RandomAgent < BasicAgent
             self@BasicAgent(color)           
         end
         
-        function actionProba = compute_action_proba(~, domain)
+        function actionProba = compute_action_proba(~, domain, recorder)
             actionProba = proba_normalize_row(ones(1,domain.environment.nActions));
+            recorder.logit(actionProba)
         end
         
     end    

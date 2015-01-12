@@ -11,6 +11,11 @@ switch simuInfo.expType
     case 'team'
         domain = create_domain_from_struct(rec.domainStructHypothesis{rec.hypothesisSelected});
         
+    case 'random'        
+        domainStruct = rec.domainStructHypothesis{rec.hypothesisSelected};
+        domainStruct.predators{1} = RandomAgent();
+        domain = create_domain_from_struct(domainStruct);
+        
     otherwise
         error(['exp type:', simuInfo.expType, ' is unknown'])
         
@@ -19,9 +24,10 @@ end
 domain.load_domain_state(rec.initDomainState)
 
 %%
-cnt = 0;
-while true
-    cnt = cnt + 1;
+nPreyLocked = 0;
+newSeed = rec.seed; %used when reseting the setup when prey captured
+for cnt = 1:simuInfo.maxIteration
+    
     add_counter(cnt, simuInfo.maxIteration)
     tic
     
@@ -73,13 +79,47 @@ while true
         end
     end
     
+    %% check if prey capture, reset environment but do not reset hypothesis proba
+    if domain.is_prey_locked_at_locking_state()
+        preyLocked = 1;
+        nPreyLocked = nPreyLocked +1;
+        newSeed = rec.seed + nPreyLocked;
+        
+        %% reinit the domain - set the seed so it is the same init state each subscequent task
+        %save current domain state for the record
+        domainState = domain.get_domain_state();
+        rec.logit(domainState)
+        % generate new domain state
+        init_random_seed(newSeed); 
+        tmpDomain = create_domain_from_struct(rec.domainStructHypothesis{rec.hypothesisSelected});
+        tmpDomain.init()
+        % load it
+        domain.load_domain_state(tmpDomain.get_domain_state())        
+    else
+        preyLocked = 0;
+    end
+    rec.logit(preyLocked)
+    rec.logit(nPreyLocked)
+    rec.logit(newSeed)
+    
     %%
     loopTime = toc; rec.logit(loopTime)
     remove_counter(cnt, simuInfo.maxIteration)
-    
-    if domain.is_prey_locked_at_locking_state() || cnt >= simuInfo.maxIteration
-        domainState = domain.get_domain_state();
-        rec.logit(domainState)
-        break
-    end
 end
+
+%save current domain state for the record
+domainState = domain.get_domain_state();
+rec.logit(domainState)
+
+
+
+
+
+
+
+
+
+
+
+
+

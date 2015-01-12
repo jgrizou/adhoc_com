@@ -8,8 +8,6 @@ simuInfo.nComMapping = simuInfo.defaultNComMapping;
 
 %
 simuInfo.expType = 'team'; %adhoc, team
-simuInfo.adhocUseCom = true;
-simuInfo.adhocUseObs = true;
 
 %
 [~, filename, ~] = fileparts(mfilename('fullpath'));

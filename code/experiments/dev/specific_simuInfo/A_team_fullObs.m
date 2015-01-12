@@ -5,8 +5,6 @@ simuInfo.nLockingState = simuInfo.defaultNLockingState;
 
 %
 simuInfo.expType = 'team'; %adhoc, team
-simuInfo.adhocUseCom = false;
-simuInfo.adhocUseObs = true;
 
 %
 [~, filename, ~] = fileparts(mfilename('fullpath'));
