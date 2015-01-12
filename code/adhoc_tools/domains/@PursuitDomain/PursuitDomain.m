@@ -137,6 +137,13 @@ classdef PursuitDomain < matlab.mixin.Copyable
         end
         
         function apply_agent_action(self, agentIdx, action)            
+            nextState = self.environment.eval_next_state_with_noise(self.get_agent_state(agentIdx), action);
+            if ~self.is_state_occupied(nextState)
+                self.set_agent_state(agentIdx, nextState);
+            end
+        end
+        
+        function apply_agent_action_no_noise(self, agentIdx, action)            
             nextState = self.environment.eval_next_state_no_noise(self.get_agent_state(agentIdx), action);
             if ~self.is_state_occupied(nextState)
                 self.set_agent_state(agentIdx, nextState);
@@ -284,7 +291,7 @@ classdef PursuitDomain < matlab.mixin.Copyable
                     domainCopy = copy(self);
                     for j = 1:length(ordering)
                         agentIdx = ordering(j);
-                        domainCopy.apply_agent_action(agentIdx, actionsIndexes(i, agentIdx))
+                        domainCopy.apply_agent_action_no_noise(agentIdx, actionsIndexes(i, agentIdx))
                     end
                     % if same domain state increase proba
                     if PursuitDomain.are_domain_states_equal(domainCopy.get_domain_state(), nextDomainState)

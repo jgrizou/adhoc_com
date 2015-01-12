@@ -250,6 +250,10 @@ classdef ToroidalGridMDP < handle
             nextState = sample_next_state(self.obstaleFreeMDPNoNoise, startState, action);
         end
         
+        function nextState = eval_next_state_with_noise(self, startState, action)
+            nextState = sample_next_state(self.obstaleFreeMDPWithNoise, startState, action);
+        end
+        
     end
     
 end
