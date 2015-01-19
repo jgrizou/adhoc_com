@@ -8,9 +8,7 @@ ensure_new_folder(analysisFolder)
 
 rF = getfilenames(resultFolder);
 
-maxIter = 200;
-
-for irF = 1:length(rF)
+for irF = 3:length(rF)
     
     disp('###')
     add_counter(irF, length(rF))
@@ -33,23 +31,21 @@ for irF = 1:length(rF)
                         
         runTime = sum(rec.loopTime); log.logit(runTime)
         
-        time_to_capture = length(rec.loopTime); log.logit(time_to_capture)
-        
+        log.log_from_logger(rec, 'loopTime')  
+        log.log_from_logger(rec, 'preyLocked')  
+        log.log_from_logger(rec, 'nPreyLocked')
+        log.log_from_logger(rec, 'seed')  
+             
         if isprop(rec, 'probaHypothesis')
-            entropy = ones(maxIter, 1) * -1;
-            probaTrueHyp = ones(maxIter, 1) * -1;
-            for iIteration = 1:time_to_capture
+            entropy = ones(size(rec.probaHypothesis,1), 1) * -1;
+            for iIteration = 1:size(rec.probaHypothesis,1)
                 entropy(iIteration) = wentropy(rec.probaHypothesis(iIteration,:), 'shannon');
-                probaTrueHyp(iIteration) = rec.probaHypothesis(iIteration,rec.hypothesisSelected);
             end
-            entropy(time_to_capture:end) = entropy(time_to_capture);
-            probaTrueHyp(time_to_capture:end) = probaTrueHyp(time_to_capture);
+            probaTrueHyp = rec.probaHypothesis(:,rec.hypothesisSelected);
 
             log.logit(entropy)
             log.logit(probaTrueHyp)      
         end
-        
-        log.log_from_logger(rec, 'seed')        
         
         remove_counter(isubF, length(subF))
     end
