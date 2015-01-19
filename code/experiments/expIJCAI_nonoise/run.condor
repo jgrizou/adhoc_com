@@ -1,0 +1,19 @@
+# executable and args
+Executable = /bin/bash
+Arguments = /projects/agents5/grizou/run_matlab_script.sh /projects/agents5/grizou/adhoc_com/code/experiments/expIJCAI_nonoise/condor_jobs/condor_$(Process).m
+Requirements = Precise && (Arch == "x86_64") 
+
+GetEnv = True
+Universe = vanilla
+
+# output
+Error  = /projects/agents5/grizou/output/$(Process).err
+Output = /projects/agents5/grizou/output/$(Process).out
+Log    = /projects/agents5/grizou/output/$(Process).log
+
+# CS Specific
++Group = "Grad"
++Project="AI_ROBOTICS"
++ProjectDescription="Research on ad hoc team agents"
+
+Queue 1000
