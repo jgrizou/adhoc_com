@@ -80,23 +80,31 @@ classdef PartialObsAgent < AutoCardinalTaskAgent
         
         %%
         
-        function draw_visible_states(self, domain)
+        function draw_visible_states(self, domain, color)
+            if nargin < 3
+               color = 'r';
+            end
+            
             domain.environment.drawer.reset_colors()
             domain.environment.drawer.draw()
             visibleStates = self.get_visible_states(domain);
             for i = 1:length(visibleStates)
                 visiblePosition = domain.environment.state_to_position(visibleStates(i));
-                domain.environment.drawer.draw_square(visiblePosition, 'y')
+                domain.environment.drawer.draw_square(visiblePosition, color)
             end
         end
         
-        function draw_invisible_states(self, domain)
+        function draw_invisible_states(self, domain, color)
+            if nargin < 3
+                color = 'r';
+            end
+            
             domain.environment.drawer.reset_colors()
             domain.environment.drawer.draw()
             visibleStates = self.get_invisible_states(domain);
             for i = 1:length(visibleStates)
                 visiblePosition = domain.environment.state_to_position(visibleStates(i));
-                domain.environment.drawer.draw_square(visiblePosition, 'y')
+                domain.environment.drawer.draw_square(visiblePosition, color)
             end
         end
     end

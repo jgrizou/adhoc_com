@@ -308,6 +308,7 @@ classdef PursuitDomain < matlab.mixin.Copyable
             self.environment.drawer.draw()
             hold on
             %draw locking state
+            self.environment.drawer.draw_square(self.environment.state_to_position(self.lockingState), [1,1,1], 'CS')
             self.environment.drawer.draw_dot(self.lockingState, get_nice_color('b'))
             %draw agent
             for i = 1:length(self.agents)
