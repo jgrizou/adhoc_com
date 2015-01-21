@@ -1,14 +1,13 @@
-clean
+function analyse_folder(folderName)
 
-[pathstr, ~, ~] = fileparts(mfilename('fullpath'));
-resultFolder = fullfile(pathstr, 'results');
+resultFolder = fullfile(folderName,  'results');
 
-analysisFolder = fullfile(pathstr, 'analysis');
+analysisFolder = fullfile(folderName, 'analysis');
 ensure_new_folder(analysisFolder)
 
 rF = getfilenames(resultFolder);
 
-for irF = 3:length(rF)
+for irF = 1:length(rF)
     
     disp('###')
     add_counter(irF, length(rF))
@@ -26,6 +25,8 @@ for irF = 3:length(rF)
             load(subF{isubF})
         catch err
             disp(['Could not load: ', subF{isubF}])
+            disp('Deleting it...')
+            delete(subF{isubF})
             continue
         end
                         
