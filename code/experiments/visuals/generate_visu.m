@@ -113,7 +113,7 @@ if savePlots == 1
 end
 
 %%
-preyStateToConsider = [11,24,43,39];
+preyStateToConsider = [11,33,43,39];
 
 for iPrey = 1:length(preyStateToConsider)
     preyState = preyStateToConsider(iPrey);

@@ -1,7 +1,7 @@
 clean
 [pathstr, ~, ~] = fileparts(mfilename('fullpath'));
 
-foldersToAnalyse = {'expIJCAI', 'expIJCAI_nonoise'};
+foldersToAnalyse = {'expIJCAI_nonoise', 'expIJCAI'};
 
 for i = 1:length(foldersToAnalyse)
    

@@ -36,6 +36,10 @@ function plot_all_for_folder(folderName, savePlots)
 
     plotFolder = fullfile(folderName, 'plots');
     plotFormats = {'png', 'eps'};
+    
+    %%
+    xAxisLabel = 'Number of Iterations';
+    yAxisLabel = 'Number of Captured Preys';
 
     %%
     figure('position', figPos)
@@ -46,6 +50,11 @@ function plot_all_for_folder(folderName, savePlots)
     [Hs, Ss] = plot_nCaptured_for_methods(analysisFolder, allMethodCells, methodId, markerStep, markersize, linewidth, markerType, legendProp);
     plot([0,200], [0,0], 'k--')
     ylim(yLimits)
+    
+    xlabel(xAxisLabel)
+    ylabel(yAxisLabel)
+    xlabh = get(gca, 'Xlabel');
+    set(xlabh, 'Position', get(xlabh, 'Position') - [0, 0.2, 0])
 
     plotFilenames = {'teamComparaison'};
     if savePlots == 1
@@ -62,6 +71,11 @@ function plot_all_for_folder(folderName, savePlots)
     [Hs, Ss] = plot_nCaptured_for_methods(analysisFolder, allMethodCells, methodId, markerStep, markersize, linewidth, markerType, legendProp);
     plot([0,200], [0,0], 'k--')
     ylim(yLimits)
+    
+    xlabel(xAxisLabel)
+    ylabel(yAxisLabel)
+    xlabh = get(gca, 'Xlabel');
+    set(xlabh, 'Position', get(xlabh, 'Position') - [0, 0.2, 0])
 
     plotFilenames = {'fullObs'};
     if savePlots == 1
@@ -78,6 +92,11 @@ function plot_all_for_folder(folderName, savePlots)
     [Hs, Ss] = plot_nCaptured_for_methods(analysisFolder, allMethodCells, methodId, markerStep, markersize, linewidth, markerType, legendProp);
     plot([0,200], [0,0], 'k--')
     ylim(yLimits)
+    
+    xlabel(xAxisLabel)
+    ylabel(yAxisLabel)
+    xlabh = get(gca, 'Xlabel');
+    set(xlabh, 'Position', get(xlabh, 'Position') - [0, 0.2, 0])
 
     plotFilenames = {'partialObsCom'};
     if savePlots == 1
@@ -94,6 +113,11 @@ function plot_all_for_folder(folderName, savePlots)
     [Hs, Ss] = plot_nCaptured_for_methods(analysisFolder, allMethodCells, methodId, markerStep, markersize, linewidth, markerType, legendProp);
     plot([0,200], [0,0], 'k--')
     ylim(yLimits)
+    
+    xlabel(xAxisLabel)
+    ylabel(yAxisLabel)
+    xlabh = get(gca, 'Xlabel');
+    set(xlabh, 'Position', get(xlabh, 'Position') - [0, 0.2, 0])
 
     plotFilenames = {'partialObsCom_subset'};
     if savePlots == 1
@@ -105,8 +129,11 @@ function plot_all_for_folder(folderName, savePlots)
     figure('position', figPos)
     hold on
 
-    methodId = [1, 3,4,5,6];
-    markerType = {'s', '*', '^', 'v', '>'};
+%     methodId = [1,3,4,5,6];
+%     markerType = {'s', '*', '^', 'v', '>'};
+    
+    methodId = [1,3];
+    markerType = {'s', '*'};
     legendProp = {'Location', 'NE'};
 
     markerStep = 10;
@@ -145,6 +172,11 @@ function plot_all_for_folder(folderName, savePlots)
     set(M, 'MarkerSize', sqrt(markersize), 'LineWidth', linewidth);
     xlim([0,50])
     ylim([0,5.5])
+    
+    xlabel(xAxisLabel)
+    ylabel('Computational Time (log_{10} scale)')
+    xlabh = get(gca, 'Xlabel');
+    set(xlabh, 'Position', get(xlabh, 'Position') - [0, 0.2, 0])
 
     plotFilenames = {'computationalTime'};
     if savePlots == 1
