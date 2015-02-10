@@ -7,6 +7,9 @@ switch simuInfo.expType
     
     case 'adhoc'
         domain = AdhocAgent.create_adhoc_domain(rec.domainStructHypothesis, rec.hypothesisSelected);
+    
+    case 'adhoccom'
+        domain = AdhocAgentCom.create_adhoc_com_domain(rec.domainStructHypothesis, rec.hypothesisSelected);
         
     case 'team'
         domain = create_domain_from_struct(rec.domainStructHypothesis{rec.hypothesisSelected});
@@ -42,7 +45,7 @@ for cnt = 1:simuInfo.maxIteration
     domainState = domain.get_domain_state();
     
     %% update proba from message, only for adhoc mode
-    if strcmp(simuInfo.expType, 'adhoc')
+    if strcmp(simuInfo.expType, 'adhoc') || strcmp(simuInfo.expType, 'adhoccom')
         if simuInfo.adhocUseCom
             logProbaHypothesisUpdateMessage = domain.agents{1}.compute_hypothesis_log_update_from_message(domainState);
             domain.agents{1}.update_hypothesis_proba(logProbaHypothesisUpdateMessage)
@@ -54,7 +57,7 @@ for cnt = 1:simuInfo.maxIteration
     domain.apply_agents_actions(agentsActions, ordering)
     
     %% update hypothesis proba, only for adhoc mode
-    if strcmp(simuInfo.expType, 'adhoc')
+    if strcmp(simuInfo.expType, 'adhoc')  || strcmp(simuInfo.expType, 'adhoccom')
         if simuInfo.adhocUseObs
             logProbaHypothesisUpdateState = domain.agents{1}.compute_hypothesis_log_update_from_state(domainState, domain.get_domain_state(), ordering);
             domain.agents{1}.update_hypothesis_proba(logProbaHypothesisUpdateState)
@@ -66,7 +69,7 @@ for cnt = 1:simuInfo.maxIteration
     rec.logit(domainState)
     
     %% specific logs, only for adhoc mode
-    if strcmp(simuInfo.expType, 'adhoc')
+    if strcmp(simuInfo.expType, 'adhoc') || strcmp(simuInfo.expType, 'adhoccom')
         rec.log_field('logProbaHypothesis', domain.agents{1}.logProbaHypothesis)
         rec.log_field('probaHypothesis', domain.agents{1}.probaHypothesis)
         
