@@ -1,0 +1,40 @@
+\section{Ad Hoc Agent in the Pursuit Domain}
+\label{sec:method}
+
+The team described in the previous section is a well-formed and complete one. Capturing the prey requires all agents to play their role in the team. We now remove one predator randomly from this team and replace it by our ad hoc agent using the algorithm presented in Section~\ref{sec:problem}. For example, this scenario would occur when our ad hoc agent is used to replace a broken robot. As described, the ad hoc agent does not know in advance its teammates, but it has access to a set of possible domains $D$, which includes a set of tasks, team configurations, and communication protocols. In addition, the ad hoc agent has access to the full dynamic model of the environment.
+
+As detailed in Section~\ref{sec:problem}, to infer the correct configuration the ad hoc agent can rely on two sources of information. First, it can partially observe the movements of all the predators. Second, in the partial observability case, it can observe the communication broadcasted by all agents. We now describe how our algorithm has been implemented for the pursuit scenario considered.
+
+\subsection{Estimating the Correct Domain}
+
+First, the agent can use the observation of other agents' state as described in Equation~\ref{eq:obsupdate}. In our pursuit domain, the ad hoc agent knows the state of the all predators, but, in the partial observability case, it has uncertainty about the prey position.
+%
+\begin{eqnarray}
+p(d_h) &=& \sum_{s'_{prey}} \sum_{s_{prey}} p(d_h|S',S) p(s'_{prey}) p(s_{prey})  \label{eq:adhocobsupdate}
+\end{eqnarray}
+%
+with $p(d_h|S',S)$ as expanded in Equation~\ref{eq:obsupdateexpanded}. In the case of full observability, the sum over all possible prey states disappears. In the case of partial observability, messages allow to reduce the uncertainty about the prey state. It is very helpful to narrow the computation of Equation~\ref{eq:adhocobsupdate}. We explicitly write the state of the prey as $s_{prey}$ in the following equations. $s^{obs}_{prey}$ represents the information the ad hoc agent has about the prey before integrating information from the messages. Equation~\ref{eq:stateupdate} unfolds as:
+%
+\begin{eqnarray}
+\lefteqn{p(s_{prey}|M, s^{obs}_{prey}, S, d_h)} \nonumber \\  &=& \prod_i p(s_{prey}|m_{b_i}, s_{b_i}, s^{obs}_{prey}, \com_h)
+\label{eq:preyestimate}
+\end{eqnarray}
+%
+with $\com_h$ from $d_h$ and because agents' messages are independent.
+
+The estimation of the coherence of agents' messages $p(M|S,d_h)$ from Equation~\ref{eq:messageupdate} is computationally costly because the prey position is not fully determined to the ad hoc agent. It only has access to a probability map of the prey state.
+% \todo{weird sentence::: It should therefore go over all hypothesis prey states while accounting for the potential noise in communication}.
+To speed up the learning, it approximates Equation~\ref{eq:messageupdate} by summing the values of the prey state probability map inferred from the decoding of the messages in Equation~\ref{eq:preyestimate}.
+%
+\begin{eqnarray}
+p(M|S,d_h) &\approx& \sum_{s} p(s_{prey} = s|M, s^{obs}_{prey}, S, d_h)  \label{eq:approxmessupdate}
+\end{eqnarray}
+%
+For example, if the map is full of zeros, the information decoded from predators' messages is not coherent and therefore the hypothesis can be discarded, i.e. $p(M|S,d_h) = 0$. The more the maps decoded from each agent overlap, the higher the probability.
+
+
+\subsection{Ad hoc communication}
+
+The ad hoc agent does not send messages. It would require further developments that are not central to the point made in this work. Indeed, deciding of a communication protocol in the beginning of the experiment -- when all hypotheses are viable -- is sensitive because a wrong message broadcasted by the ad hoc agent will impact the behavior of the full team. Especially given that agents are not capable of handling incoherent messages. As we will see in next section, not considering ad hoc messages has only a minor impact on the final performance.
+
+% The ad hoc agent does not communicate. Even if it would be possible -- once the correct team configuration $d$ is identified -- to also include communication from the ad hoc agent, deciding of a communication protocol in the beginning of the experiment -- when all hypotheses are viable -- is more difficult. Indeed, a wrong message broadcasted will impact the behavior of the full team, especially because agents are not capable of handling incoherent messages. This particular point requires further exploration, for these reasons, we leave out the possibility for the ad hoc agent to communicate. As we will see in next section, it has only a minor impact on the final performances.

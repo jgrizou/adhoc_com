@@ -1,0 +1,44 @@
+\section{Introduction}
+
+% As robots are moving into the real world, they will need to engage in cooperative activities with previously unknown teammates.
+
+There are many situations where an international effort is needed to address a particular well focused problem, e.g. rescue efforts in a natural disaster area. In this setting, multiple robots might be available, but they do not have the same software and hardware, and they will not communicate and coordinate using standard protocols. Nevertheless, they should coordinate to achieve a common goal, even if team coordination strategies cannot be pre-defined.
+
+This challenge of multi-agent interaction without pre-coordination is also called the pickup team challenge \cite{gil2006dynamically} or the ad hoc team challenge \cite{stone2010ad}. It states that agents should learn to collaborate without defining pre-coordination schemes and/or without knowing what the other agents are capable of \cite{bowling2005coordination,gil2006dynamically,stone2010ad}.
+
+In this work, we focus on the ad hoc team challenge (\cite{stone2010ad}). We imagine a team of specialized agents that work to achieve a specific task and coordinate using a specific language. We introduce a new algorithm allowing an ad hoc agent to join and collaborate with such a team. The ad hoc agent must take its role in the team and must therefore identify the three following components:
+%
+\begin{itemize}
+\item the \textbf{task} the team is trying to solve, so as to help the team achieve it;
+\item the \textbf{role} of each agent, so as to replace the missing specialized agent;
+\item the \textbf{communication protocol} used by the team, so as to be informed of important facts concerning the task.
+\end{itemize}
+%
+We present empirical results in the pursuit domain showing that an ad hoc agent can efficiently replace any member of such a team. For this purpose, we assume the ad hoc agent has access to a set of hypotheses about the possible tasks, team configurations, and communication systems. Given this information it is possible to infer which hypothesis is the most likely given the observations of other agents' movements and communications. We show that the default team performance is quickly recovered after our ad hoc agent is included and further show that our algorithm is robust to noise.
+
+%In the following sections, we formally define the problem and describe how an ad hoc agent can infer which hypothesis is correct one select its actions. We then describe the pursuit domain used for testing our algorithm, as well as the possible tasks, team configurations, and communication systems. In Section \ref{sec:results}, we compare the default team performance with the one including the ad hoc agent. Finally, we propose a number of directions for future work and highlight related work from other fields of research.
+
+\section{Related Work}
+
+Previous research focused on different variations of the problem.
+
+\textbf{How an ad hoc agent can influence its teammates to achieve a new task} (\cite{stone2013teaching}). It is usually assumed that teammates have limited action capabilities and a fixed and known behavior. Furthermore, only the ad hoc agent is aware of the goal of the task and has to influence the behaviors of the others to fulfill it. \cite{stone2010teach,stone2013teaching} define the general problem and provide a solution for the two agents scenario. Extension to the multi-teammates case is presented by \cite{agmon12leading}. An interesting application is the study of how an ad hoc agent can learn to lead a flock of agents (\cite{genter2013flock}).
+% Such work assumes prior knowledge of a generative model of the teammate’s policy that generates sample trajectories of their behavior.
+
+\textbf{How an ad hoc agent can adapt in a pre-formed team, with the specific aim of optimally helping the team to achieve its goal} (\cite{barrett2013team}). It is usually assumed the task to achieve is known to the ad hoc agent. In a first approach the model of the other agents was known \cite{barrett2011empirical}, but this assumption was progressively removed: first, by assuming agents were drawn from a set of possible agents \cite{barrett2011empirical,genter2011role}, and then, by learning online a model of each teammate \cite{barrett2013team} -- even considering learning abilities from the other agents \cite{chakraborty2013cooperating}.
+
+\textbf{How an ad hoc agent can best communicate with its teammates} (\cite{barrett2014communicating}). This recent work assumes the ad hoc agent is omniscient -- knowing the task, the model of the agents, and the communication protocol. However, the ad hoc agent does not always knows how its teammates would react to its messages. The problem was how to optimally communicate with other agents to improve the team performance in a k-armed bandit problem.
+
+This paper differs from previous work in that the ad hoc agent is not informed of the task to be achieved and does not initially understand the communication of the other agents. This work shares similarities with previous work in that our team includes specialized agents, as in \cite{genter2011role}, and we will assume a finite set of possible teammates and domain configurations, as in \cite{genter2011role,barrett2011empirical,barrett2014communicating}.
+
+% \todo{Confusing sentence:::: Contrary to previous approaches, the ad hoc agent will simply try to fulfill the role of the missing agent, but previous studies already demonstrated that a team-aware ad hoc agent could even improve the default team performance \cite{barrett2011empirical,chakraborty2013cooperating}.}
+
+A similar problem, where both the task and the communication are unknown, has already been investigated in human-machine interaction \cite{grizou2014interactive}. They consider only two agents, a teacher and a learner. The learning agent has access to even less information than the scenario presented here -- it could not observe the actions of the other agent and could only act on its own towards the success of the task. However, the learner could observe non-symbolic communication signals from the other agent, whose meaning, i.e. its language, was initially unknown. Bringing their work to the multi-agent problem is not straightforward and would require additional developments not considered in this work.
+
+% A similar problem, where both the task and the communication are unknown, has already been investigated in human-machine interaction \cite{grizou2013robot,grizou2014interactive}. In their work, the learning agent has access to even less information than the scenario presented here -- it could not observe the actions of the other agent and could only act on its own towards the success of the task. However the learner could observe non-symbolic communication signals from the other agent, whose meaning, i.e. its language, was initially unknown. It lead to interesting application for calibration-free brain-computer interaction \cite{grizou2014calibration}. They propose ways to extend their approach to continuous state space and an infinite set of task, but bringing their work to the multi-agent problem is not straightforward and would require additional developments not considered in this work.
+
+% Our aim with the paper is to show that these unknowns, which are usually considered separately, can be considered jointly. To this end we designed a default team that is fully functional. This team has to achieve a given task, each agent in the team has a specific role, and they all communicate given a specific protocol. The aim of our experiment is to study how an ad hoc agent can fit and collaborate with such a team. To this end, we randomly remove an agent from a working team and insert our ad hoc agent. The ad hoc agent must take the role of the missing agent and must therefore infer what is the task, the team configuration, and the communication protocol.
+
+% Indeed, it is difficult to infer the communication if we do not know the task, or to infer the task if we do not know the role of each agent. Yet, it is unlikely that all agents in a team share any of the above-mentioned information before practical interaction.
+
+% We identified three usual sources of uncertainty an ad hoc agent faces in most scenarios: the task, the team configuration, and the communication protocol.

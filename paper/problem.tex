@@ -1,0 +1,84 @@
+\section{Fluid Collaboration in Ad Hoc Teamwork}
+\label{sec:problem}
+
+\subsection{Problem Definition}
+
+We consider a team $B$ of $n_B$ agents $B = \{b_1, \ldots , b_{n_B}\}$ that is functional and well suited to solve the task from a domain $d \in D$. A domain is made of four components:
+
+\begin{itemize}
+\item An \textbf{environment} $\env$ made of $n_S$ states, which we denote $\{s_1, \ldots, s_{n_S}\}$, and where agents can perform $n_U$ actions, which we denote $\{u_1, \ldots, u_{n_U}\}$. The environment dynamics are known and described by a probability distribution that for any given state $s$ and action $u$ gives the probability of a next state $s'$, $p(s'|s,u,\env)$.
+\item A \textbf{task} $\task$ that the agents should achieve, represented by a reward function $R$.
+\item A \textbf{configuration} $\conf$ that defines the role given to each agent, i.e. their specialties.
+\item A \textbf{protocol} $\com$ that defines the way agents communicate to each others, i.e. their language. We denote $m_{b}$ as the message of an agent $b$.
+\end{itemize}
+
+A domain is defined by $d = \{\env, \task, \conf, \com\}$ that is a subset of all possible domains $D$. We denote $S$ as the set of all agent states, $ S~=~\{ s_{b_1}, \ldots, s_{b_{n_B}} \} $, respectively $S'$ the set of all agent next states. We denote $M$ as the set of all agents' messages, $M~=~\{m_{b_1}, \ldots, m_{b_{n_B}}\}$. We want to evaluate how an ad hoc agent $a$ can adapt in such a domain. To evaluate its performance, we remove one agent randomly from a fully formed team, creating the set $B^-$, and replace it by the ad hoc agent. The resulting team is denoted as $B^{-}_{a}$.
+%
+The team performance is evaluated on the task $\task$ using the reward function $R$. We denote $score(B, d)$ as the score resulting from the team $B$ executing the problem $d$, i.e. the accumulated reward. In this work, we want to create an ad hoc agent that minimizes the score loss between the original team $score(B, d)$ and the team with the ad hoc agent $score(B^{-}_{a}, d)$. The problem is that the ad hoc agent needs to fit into a team yet unknown to it. It must therefore identify all the components of the domain ($\env, \task, \conf, \com$). The main challenge is that the ad hoc agent does not have direct access to its performance. Indeed, it cannot compute $score(B^{-}_{a}, d)$ because $d$ is unknown to it.
+
+\subsection{Algorithm}
+
+To tackle this problem, we assume the agent has access to a bigger set $D = \{d_1, \ldots, d_{n_H}\}$, containing $n_H$ possible domains, from which is pulled the particular domain $d$ considered. We further consider that, for any given $d_h$, the ad hoc agent can predict, in a probabilistic way, the expected behavior and communication of the agents. Hence, our approach relies on computing the posterior probability of each hypothetical domain given the information available to the ad hoc agent, here the observation from states and messages of the other agents. The correct hypothesis will be the one that maximizes this probability:
+%
+\begin{eqnarray}
+\argmax_h~~p(d_h|S',S,M)  \label{eq:problem}
+\end{eqnarray}
+%
+where $S$ and $S'$ are the observed states and next states, and $M$ is the messages sent by each agent. We can decompose the previous equation using Bayes' rule and see that we have to compute two different components: first the probability of the next states given the initial states, the messages, and a domain hypothesis $p(S'|S,M,d_h)$, and then the probability of the messages themselves given states and a domain hypothesis $p(M|S,d_h)$. In the following subsections, we detail these components as well as how the ad hoc agent can plan its actions.% first how to use observations of the state of other agents, then how to exploit their messages, and finally
+
+\subsubsection{Using state observations}
+
+Observing the behavior of all other agents is a valuable source of information. Given a hypothesis domain $d_h$, we can compute the probability of the next agent state $S'$ given the current agent state $S$. For each hypothesis, we create a Bayes' filter that accumulates the probability of each domain conditionally on the observation of the agent movements.
+To do so, we must estimate the probability that each agent selected each available action. We then estimate the probability of the observed state given all possible combinations of agents' actions and the environment dynamics:
+% We denote that the computational cost of such update rule rises quickly with the number of agents.
+%
+\begin{eqnarray}
+p(d_h|S',S) &\propto& p(S'|S,d_h) p(d_h)
+\label{eq:obsupdate}
+\end{eqnarray}
+%
+with
+%
+\begin{eqnarray}
+p(S'|S,d_h) \prod_i \sum_j p(s'_{b_i}|s_{b_i},u_j,\env_h) p(u_j|s_{b_i}, S, d_h)
+\label{eq:obsupdateexpanded}
+\end{eqnarray}
+%
+where $\env_h$ is the environment in $d_h$ which includes the state transition model. And $p(u_j|s_{b_i}, S, d_h)$ is the model of agent $b_i$ action selection, which is based on all the components of $d_h$ and the current state of the domain $S$. Given the agents' roles, they actions are independent. % But this might not always be the case, as exemplified in the pursuit domain example of section~\ref{sec:domain}. To accommodate with thisThe equation above considers the case of full knowledge of the states. As this might not always be true, the update rule should also account for partial knowledge of states.
+The equation becomes:
+%
+\begin{eqnarray}
+p(d_h) &=& \sum_{S'} \sum_S p(d_h|S',S) p(S') p(S)
+\label{eq:obsupdatestateprob}
+\end{eqnarray}
+%
+which can be expanded as for Equation~\ref{eq:obsupdateexpanded}. For example, this uncertainty about the state of the world can be explained by partial observability from the ad hoc agent. Communication between agents can help refine its estimate of the current state.
+
+\subsubsection{Using communication}
+
+Communication can greatly benefit coordination in a team. In our setting, the messages exchanged can provide two valuable types of information. First, in case of partial state observation, they help narrow the probability of the states:
+%
+\begin{eqnarray}
+p(S|M, S^{obs}, d_h)
+\label{eq:stateupdate}
+\end{eqnarray}
+%
+with $S^{obs}$ being the state observed by the agent. This is helpful to narrow down the update in equation~\ref{eq:obsupdatestateprob}. Second, given a specific domain hypothesis $d_h$, they can be used to test the coherence of the messages agents sent based on the associated communication protocol $\com_h$. For example, if messages from all agents do not indicate concordant information, and if they cannot be explained by communication noise, then the communication protocol associated to the domain hypothesis $d_h$ is not the one used by the team. This results in an additional domain probability update rule:
+%
+\begin{eqnarray}
+p(d_h|M,S) &\propto& p(M|S,d_h) p(d_h)
+\label{eq:messageupdate}
+\end{eqnarray}
+%
+The set of equations defined above are generic update rules for an ad hoc agent to infer which domain it is facing. Details about their particular implementation for the pursuit domain are provided in the following sections.
+
+\subsubsection{Planning}
+
+We now consider the action selection method for the ad hoc agent. Previous work considered ad hoc agents that solve the optimal teammate problem. Such agents know the model of their teammates and select their next action in order to improve maximally the team performance -- often resulting in better performance that the initial team \cite{barrett2011empirical}. The aim of this study is different; we want to advocate the fact that the ad hoc agent can work under less assumptions than before and be able to estimate more information about the new team. Hence, we isolate our algorithm from the planning aspects and test whether it can select between candidate domain. Therefore, in this work, the ad hoc agent simply tries to replace a missing agent in the team. To this end, the ad hoc agent will weight the policies of the agent it replaces for each domain hypotheses $d_h$ by the probability currently assigned to this configuration $p(d_h)$.
+%
+\begin{eqnarray}
+p(u_a|M, S,d_h) = \sum_h p(u_a|M, S, d_h) p(d_h)
+\label{eq:adhocpolicy}
+\end{eqnarray}
+%
+With this planning strategy, once the correct hypothesis is identified, the ad hoc agent will mimic the default behavior of the agent it replaces.% Nothing limits us to the use of this policy and more advanced planning strategies -- which have already been shown to be beneficial in this kind of scenario \cite{barrett2011empirical} -- could be considered.

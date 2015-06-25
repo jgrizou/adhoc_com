@@ -13,7 +13,6 @@ code/experiments/first_adhoc_test/plots
 code/experiments/dev/analysis
 code/experiments/dev/plots
 code/experiments/dev/results
-paper
 code/experiments/expIJCAI/results
 code/experiments/expIJCAI/analysis
 code/experiments/expIJCAI/plots
@@ -21,3 +20,4 @@ code/experiments/expIJCAI_nonoise/analysis
 code/experiments/expIJCAI_nonoise/plots
 code/experiments/expIJCAI_nonoise/results
 code/experiments/visuals/plots
+ijcai15.pdf
