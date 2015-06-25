@@ -1,7 +1,9 @@
-clean
+% cdclean
 [pathstr, ~, ~] = fileparts(mfilename('fullpath'));
 
 foldersToAnalyse = {'expIJCAI_nonoise', 'expIJCAI'};
+% foldersToAnalyse = {'expIJCAI'};
+
 
 savePlots = 1;
 
