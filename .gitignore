@@ -2,12 +2,7 @@ Iconr
 .dropbox
 .DS_Store
 *~
-notes
-references
-presentation
-figures
 code/experiments/first_adhoc_test/results
-old_adhoc_tools
 code/experiments/first_adhoc_test/analysis
 code/experiments/first_adhoc_test/plots
 code/experiments/dev/analysis
@@ -20,4 +15,8 @@ code/experiments/expIJCAI_nonoise/analysis
 code/experiments/expIJCAI_nonoise/plots
 code/experiments/expIJCAI_nonoise/results
 code/experiments/visuals/plots
-ijcai15.pdf
+paper/adhoccom.aux
+paper/adhoccom.bbl
+paper/adhoccom.blg
+paper/adhoccom.log
+paper/adhoccom.pdf
