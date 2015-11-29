@@ -9,9 +9,9 @@
 
 % To use, place in a file called conference.sty, or whatever your conference
 % is called, in the TeX search path.  (Placing it in the same directory as
-% the paper should also work.) 
+% the paper should also work.)
 
-% Prepared by Peter F. Patel-Schneider, 
+% Prepared by Peter F. Patel-Schneider,
 % liberally using the ideas of
 % other style hackers, including Barbara Beeton.
 % This style is NOT guaranteed to work.  It is provided in the hope
@@ -85,12 +85,12 @@
 % Physical page layout
 \twocolumn \flushbottom \sloppy
 % Note that TeX has built-in 1-inch top and left margins.
-\setlength\topmargin{-0.25in} 
+\setlength\topmargin{-0.25in}
 \setlength\oddsidemargin{-0.25in}
 \setlength\evensidemargin{-0.25in}
 \setlength\textheight{9.0in}
 \setlength\textwidth{7.0in}
-\setlength\columnsep{0.25in}  
+\setlength\columnsep{0.25in}
 \newlength\titlebox \setlength\titlebox{2.25in}
 
 % No pages numbers or other headers or footers
@@ -149,14 +149,14 @@
  \linewidth\hsize \vskip 0.625in minus 0.125in \centering
  {\LARGE\bf \@title \par} \vskip 0.2in plus 1fil minus 0.1in
  {\def\and{\unskip\enspace{\rm and}\enspace}%
-  \def\And{\end{tabular}\hss \egroup \hskip 1in plus 2fil 
+  \def\And{\end{tabular}\hss \egroup \hskip 1in plus 2fil
            \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}\Large\bf}%
   \def\AND{\end{tabular}\hss\egroup \hfil\hfil\egroup
           \vskip 0.25in plus 1fil minus 0.125in
            \hbox to \linewidth\bgroup\Large \hfil\hfil
              \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}\Large\bf}
   \hbox to \linewidth\bgroup\Large \hfil\hfil
-    \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}\Large\bf\@author 
+    \hbox to 0pt\bgroup\hss \begin{tabular}[t]{c}\Large\bf\@author
                             \end{tabular}\hss\egroup
     \hfil\hfil\egroup}
   \vskip 0.3in plus 2fil minus 0.1in
@@ -188,29 +188,29 @@ Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
 % Displays
 \abovedisplayskip 7pt plus2pt minus5pt%
 \belowdisplayskip \abovedisplayskip
-\abovedisplayshortskip  0pt plus3pt%   
+\abovedisplayshortskip  0pt plus3pt%
 \belowdisplayshortskip  4pt plus3pt minus3pt%
 
 % Lists
 \leftmargini 2em
 \leftmarginii 2em
-\leftmarginiii 1em 
+\leftmarginiii 1em
 \leftmarginiv 0.5em
-\leftmarginv 0.5em 
+\leftmarginv 0.5em
 \leftmarginvi 0.5em
 
 \leftmargin\leftmargini
 \labelsep 5pt
 \labelwidth\leftmargini\advance\labelwidth-\labelsep
 
-\def\@listI{\leftmargin\leftmargini 
+\def\@listI{\leftmargin\leftmargini
 \parsep 2pt plus 1pt minus 0.5pt%
 \topsep 4pt plus 1pt minus 2pt%
 \itemsep 2pt plus 1pt minus 0.5pt%
 \partopsep 1pt plus 0.5pt minus 0.5pt}
 
 \let\@listi\@listI
-\@listi 
+\@listi
 
 \def\@listii{\leftmargin\leftmarginii
    \labelwidth\leftmarginii\advance\labelwidth-\labelsep
@@ -221,7 +221,7 @@ Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
     \labelwidth\leftmarginiii\advance\labelwidth-\labelsep
     \parsep 0pt plus 1pt
     \partopsep 0.5pt plus 0pt minus 0.5pt
-    \topsep 1pt plus 0.5pt minus 0.5pt 
+    \topsep 1pt plus 0.5pt minus 0.5pt
     \itemsep \topsep}
 \def\@listiv{\leftmargin\leftmarginiv
      \labelwidth\leftmarginiv\advance\labelwidth-\labelsep}
@@ -294,7 +294,7 @@ Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
  \@ifnextchar [{\@tempswatrue\@citex}{\@tempswafalse\@citex[]}}
 
 % don't box citations, separate with ; and a space
-% also, make the penalty between citations a parameter, 
+% also, make the penalty between citations a parameter,
 % it may be a good place to break
 \def\@citex[#1]#2{%
   \def\@lastauthor{}\def\@citea{}%
@@ -317,7 +317,7 @@ Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
 %\def\@biblabel#1{\def\citeauthoryear##1##2{##1, ##2}(#1)\hfill}
 
 %%%% no key in the reference list
-%\def\@lbibitem[#1]#2{\item\if@filesw 
+%\def\@lbibitem[#1]#2{\item\if@filesw
 %      { \def\protect##1{\string ##1\space}\immediate
 %        \write\@auxout{\string\bibcite{#2}{#1}}}\fi\ignorespaces}
 %\def\thebibliography#1{\section*{References\@mkboth
@@ -326,5 +326,3 @@ Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
 %    \def\newblock{\hskip .11em plus .33em minus .07em}
 %    \sloppy\clubpenalty4000\widowpenalty4000
 %    \sfcode`\.=1000\relax}
-
-
