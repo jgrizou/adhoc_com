@@ -40,7 +40,7 @@ We now present several experiments to evaluate how an ad hoc agent can join a te
 
 For each experiment run we randomly create a domain set $D$, comprised of a set of 10 task hypotheses, 10 team configurations, and 10 communication protocols; resulting in 1000 domains. Among this set, one configuration was selected for the team but was unknown to the ad hoc agent. All the figures presented next display the mean and standard error of the variable considered. Standard errors are shown has a shaded area, but, given the high number of samples (1000 runs using the same random seed for all conditions), it is barely visible. Statistical results presented are two-sample t-test to determine if the average final scores of teams are equal.
 
-The code to reproduce these results is available online at \textbf{[anonymous for blind review]}.
+The code to reproduce these results is available online at \url{https://github.com/jgrizou/adhoc_com}.
 
 A team of agents is evaluated by its total reward accumulated in 200 steps, i.e. the number of time the prey was captured. After each capture of the prey, the predators and the prey position are randomly reassigned. The capture state, the team configuration, and the communication protocol do not change during the 200 steps.
 
