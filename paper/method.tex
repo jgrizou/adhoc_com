@@ -7,7 +7,7 @@ As detailed in Section~\ref{sec:problem}, to infer the correct configuration the
 
 \subsection{Estimating the Correct Domain}
 
-First, the agent can use the observation of other agents' state as described in Equation~\ref{eq:obsupdate}. In our pursuit domain, the ad hoc agent knows the state of the all predators, but, in the partial observability case, it has uncertainty about the prey position.
+First, the agent can use the observation of other agents' state as described in Equation~\ref{eq:obsupdate}. In our pursuit domain, the ad hoc agent knows the state of all the predators, but, in the partial observability case, it has uncertainty about the prey position.
 %
 \begin{eqnarray}
 p(d_h) &=& \sum_{s'_{prey}} \sum_{s_{prey}} p(d_h|S',S) p(s'_{prey}) p(s_{prey})  \label{eq:adhocobsupdate}
@@ -22,9 +22,9 @@ with $p(d_h|S',S)$ as expanded in Equation~\ref{eq:obsupdateexpanded}. In the ca
 %
 with $\com_h$ from $d_h$ and because agents' messages are independent.
 
-The estimation of the coherence of agents' messages $p(M|S,d_h)$ from Equation~\ref{eq:messageupdate} is computationally costly because the prey position is not fully determined to the ad hoc agent. It only has access to a probability map of the prey state.
+The estimation of the coherence of agents' messages $p(M|S,d_h)$ from Equation~\ref{eq:messageupdate} is computationally costly because the prey position is not fully observable to the ad hoc agent. It can only rely on a probability map of the prey state, therefore requiring to update on all states weigthed by their respective probability.
 % \todo{weird sentence::: It should therefore go over all hypothesis prey states while accounting for the potential noise in communication}.
-To speed up the learning, it approximates Equation~\ref{eq:messageupdate} by summing the values of the prey state probability map inferred from the decoding of the messages in Equation~\ref{eq:preyestimate}.
+To speed up the process, we approximates Equation~\ref{eq:messageupdate} by summing the values of the prey state probability map inferred from the decoding of the messages in Equation~\ref{eq:preyestimate}.
 %
 \begin{eqnarray}
 p(M|S,d_h) &\approx& \sum_{s} p(s_{prey} = s|M, s^{obs}_{prey}, S, d_h)  \label{eq:approxmessupdate}
