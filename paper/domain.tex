@@ -50,7 +50,7 @@ In the remainder of this section, we describe how agents plan their actions, as 
 
 \subsection{Notation}
 
-Each position on the grid is called a state $s$, which for convenience is also described as the $(x,y)$ coordinate. For each domain hypothesis $d \in D$, the environment $\env$ is the same, including its dynamic and noise level. A task $\task$ is fully defined by the position of the capture state, denoted $s_C$, that could be any grid cell. The reward function is one when the prey is locked on that state and is zero otherwise. A team configuration $\conf$ describes the role of each agent. For example, $\conf = [N,E,S,W]$ indicates that the first agent is in charge of the North side of the prey, the second one of the East side, etc. The communication protocol $\com$ includes a mapping and a reference (more details are provided in Section~\ref{sec:com}).
+Each position on the grid is called a state $s$, which for convenience is also described as the $(x,y)$ coordinate. For each domain hypothesis $d \in D$, the environment $\env$ is the same, including its dynamic and noise level. A task $\task$ is fully defined by the position of the capture state, denoted $s_C$, that could be any grid cell. The reward function is one when the prey is locked on that state and is zero otherwise. A team configuration $\config$ describes the role of each agent. For example, $\config = [N,E,S,W]$ indicates that the first agent is in charge of the North side of the prey, the second one of the East side, etc. The communication protocol $\com$ includes a mapping and a reference (more details are provided in Section~\ref{sec:com}).
 
 \subsection{Action selection method}
 

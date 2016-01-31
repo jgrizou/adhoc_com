@@ -1,6 +1,8 @@
-\documentclass[a4paper]{article}
+\documentclass{aamas2016}
 
-\usepackage{conference}
+\pdfpagewidth=8.5truein
+\pdfpageheight=11truein
+
 \usepackage{times}
 
 \usepackage{graphicx}
@@ -19,24 +21,40 @@
 
 
 \title{Collaboration in Ad Hoc Teamwork: \\
-Ambiguous Tasks, Roles, and Communication\vspace{1em}}
+Ambiguous Tasks, Roles, and Communication}
 
-% \author{Anonymous authors for blind review}
-\setlength\titlebox{3.8in}
+\numberofauthors{4}
 
 \author{
-Jonathan Grizou \\ Flowers Team \\ INRIA - ENSTA ParisTech \\  France \\ jonathan.grizou@inria.fr
-\And
-Samuel Barrett \\ Kiva Systems \\ North Reading, MA 01864 USA \\ basamuel@kivasystems.com
-\AND
-Peter Stone \\ Dept. of Computer Science \\ The Univ. of Texas at Austin \\ Austin, TX 78712 USA \\ pstone@cs.utexas.edu
-\And
-Manuel Lopes \\ Flowers Team \\ INRIA - ENSTA ParisTech \\  France \\ manuel.lopes@inria.fr
+\alignauthor
+Jonathan Grizou\\
+      \affaddr{Flowers Team}\\
+      \affaddr{INRIA - ENSTA ParisTech}\\
+      \affaddr{France}\\
+      \email{jonathan.grizou@inria.fr}
+\alignauthor
+Samuel Barrett\\
+      \affaddr{Kiva Systems}\\
+      \affaddr{North Reading, MA 01864 USA}\\
+      \email{basamuel@kivasystems.com}
+\and
+\alignauthor
+Peter Stone\\
+      \affaddr{Dept. of Computer Science}\\
+      \affaddr{The Univ. of Texas at Austin}\\
+      \affaddr{Austin, TX 78712 USA}\\
+      \email{pstone@cs.utexas.edu}
+\alignauthor
+Manuel Lopes\\
+      \affaddr{Flowers Team}\\
+      \affaddr{INRIA - ENSTA ParisTech}\\
+      \affaddr{France}\\
+      \email{manuel.lopes@inria.fr}
 }
 
 \newcommand{\env}{E}
 \newcommand{\task}{\tau}
-\newcommand{\conf}{\kappa}
+\newcommand{\config}{\kappa}
 \newcommand{\com}{\rho}
 \newcommand{\gridwidth}{1}
 \newcommand{\figwidth}{1}
@@ -49,7 +67,6 @@ Manuel Lopes \\ Flowers Team \\ INRIA - ENSTA ParisTech \\  France \\ manuel.lop
 \begin{document}
 
 \maketitle
-
 \begin{abstract}
 % Autonomous agents are becoming increasingly present in our environments, and will increasingly have to collaborate with previously unseen agents.
 Creating autonomous agents capable of cooperating with previously unfamiliar teammates, known as ``ad hoc teamwork'', has been identified as an important challenge for multiagent systems. Previous research has assumed that either the task, the role of each agent, or the communication protocol among agents is known before the interaction begins. We consider these three variables simultaneously and show how an ad hoc agent can fit into a new team while handling ambiguous tasks, roles, and communication protocols. We assume a known distribution of possible tasks, roles, and communication protocols. We present experimental results in the pursuit domain showing that our ad hoc agent can join such a team without barely impacting the overall performance compared to a pre-coordinated agent.
@@ -77,7 +94,7 @@ Work partially supported by INRIA, Conseil R\'{e}gional d'Aquitaine, the ERC gra
 
 % \clearpage
 
-\bibliographystyle{named}
+\bibliographystyle{abbrv}
 \bibliography{adhoccom}
 
 \end{document}
