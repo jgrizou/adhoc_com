@@ -12,7 +12,7 @@ We consider a team $B$ of $n_B$ agents $B = \{b_1, \ldots , b_{n_B}\}$ that is f
 \item A \textbf{protocol} $\com$ that defines the way agents communicate to each others, i.e. their language. We denote $m_{b}$ as the message of an agent $b$.
 \end{itemize}
 
-A domain is defined by $d = \{\env, \task, \config, \com\}$ that is a subset of all possible domains $D$. We denote $S$ as the set of all agent states, $ S~=~\{ s_{b_1}, \ldots, s_{b_{n_B}} \} $, respectively $S'$ the set of all agent next states. We denote $M$ as the set of all agents' messages, $M~=~\{m_{b_1}, \ldots, m_{b_{n_B}}\}$. We want to evaluate how an ad hoc agent $a$ can adapt in such a domain. To evaluate its performance, we remove one agent randomly from a fully formed team, creating the set $B^-$, and replace it by the ad hoc agent. The resulting team is denoted as $B^{-}_{a}$.
+A domain is defined by $d$$=$$\{\env, \task, \config, \com\}$ that is a subset of all possible domains $D$. We denote $S$ as the set of all agent states, $ S$$=$$\{ s_{b_1}, \ldots, s_{b_{n_B}} \} $ and $S'$ the set of all agent next states. We denote $M$ as the set of all agents' messages, $M$$=$$\{m_{b_1}, \ldots, m_{b_{n_B}}\}$. We want to evaluate how an ad hoc agent $a$ can adapt in such a domain. To evaluate its performance, we remove one agent randomly from a fully formed team, creating the set $B^-$, and replace it by the ad hoc agent. The resulting team is denoted as $B^{-}_{a}$.
 %
 The team performance is evaluated on the task $\task$ using the reward function $R$. We denote $score(B, d)$ as the score resulting from the team $B$ executing the problem $d$, i.e. the accumulated reward. In this work, we want to create an ad hoc agent that minimizes the score loss between the original team $score(B, d)$ and the team with the ad hoc agent $score(B^{-}_{a}, d)$. The problem is that the ad hoc agent needs to fit into a team yet unknown to it. It must therefore identify all the components of the domain ($\env, \task, \config, \com$). The main challenge is that the ad hoc agent does not have direct access to its performance. Indeed, it cannot compute $score(B^{-}_{a}, d)$ because $d$ is unknown to it.
 
@@ -24,7 +24,7 @@ To tackle this problem, we assume the agent has access to a bigger set $D = \{d_
 \argmax_h~~p(d_h|S',S,M)  \label{eq:problem}
 \end{eqnarray}
 %
-where $S$ and $S'$ are the observed states and next states, and $M$ is the messages sent by each agent. At each step a new tuple $\{S', S, M\}$ is observed and the probabilities are updated. Following Bayes' rule, we have to compute two different components: first the probability of the observed next states given the initial states, the messages, and a domain hypothesis $p(S'|S,M,d_h)$, and then the probability of the messages themselves given the oberved states and a domain hypothesis $p(M|S,d_h)$. In the following subsections, we detail these components as well as how the ad hoc agent plans its actions.% first how to use observations of the state of other agents, then how to exploit their messages, and finally
+where $S$ and $S'$ are the observed states and next states, and $M$ is the messages sent by each agent. At each step a new tuple $(S', S, M)$ is observed and the probabilities are updated. Following Bayes' rule, we have to compute two different components: first the probability of the observed next states given the initial states, the messages, and a domain hypothesis $p(S'|S,M,d_h)$, and then the probability of the messages themselves given the oberved states and a domain hypothesis $p(M|S,d_h)$. In the following subsections, we detail these components as well as how the ad hoc agent plans its actions.% first how to use observations of the state of other agents, then how to exploit their messages, and finally
 
 \subsubsection{Using state observations}
 
@@ -75,13 +75,13 @@ The set of equations defined above are generic update rules for an ad hoc agent 
 
 \subsubsection{Planning}
 
-We now consider the action selection method for the ad hoc agent. Previous work considered ad hoc agents that solve the optimal teammate problem. Such agents know the model of their teammates and select their next action in order to improve maximally the team performance -- often resulting in better performance than the initial team \cite{barrett2011empirical}. The aim of this study is different; we want to advocate the fact that the ad hoc agent can work under less assumptions than before and be able to estimate more information about the new team. Hence, we isolate our algorithm from the planning aspects and test whether it can select between candidate domains. Therefore, in this work, the ad hoc agent simply tries to replace a missing agent in the team. To this end, the ad hoc agent will weight the policies for each domain hypotheses $d_h$ by the probability currently assigned to this configuration $p(d_h)$.
+We now consider the action selection method for the ad hoc agent. Previous work considered ad hoc agents that solve the optimal teammate problem. Such agents know the model of their teammates and select their next action in order to improve maximally the team performance -- often resulting in better performance than the initial team \cite{barrett2011empirical}. The aim of this study is different; we want to demonstrate the fact that the ad hoc agent can work under fewer assumptions than before and be able to estimate more information about the new team. Hence, we isolate our algorithm from the planning aspects and test whether it can select between candidate domains. Therefore, in this work, the ad hoc agent simply tries to replace a missing agent in the team. To this end, the ad hoc agent will weight the policies for each domain hypotheses $d_h$ by the probability currently assigned to this configuration $p(d_h)$.
 %
 \begin{eqnarray}
 p(u_a|M, S) = \sum_h p(u_a|M, S, d_h) p(d_h)
 \label{eq:adhocpolicy}
 \end{eqnarray}
 %
-With this planning strategy, once the correct hypothesis is identified, the ad hoc agent will mimic the default behavior of the agent it replaces. But the agent is likely to make sensible decision earlier as irrelevant hypotheses are discarded.
+With this planning strategy, once the correct hypothesis is identified, the ad hoc agent will mimic the default behavior of the agent it replaces. But the agent is likely to make sensible decisions earlier as irrelevant hypotheses are discarded.
 
 % Nothing limits us to the use of this policy and more advanced planning strategies -- which have already been shown to be beneficial in this kind of scenario \cite{barrett2011empirical} -- could be considered.

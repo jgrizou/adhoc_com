@@ -36,7 +36,7 @@
 %   \label{fig:results}
 % \end{figure*}
 
-We now present several experiments to evaluate how an ad hoc agent can join a team for which it does not know the specific task, its role, and the communication signals being used. We will compare several teams: a pre-formed team (\emph{T}), a team including the ad hoc agent (\emph{A}), and a few baseline described next. We consider several different conditions that affect the team efficiency and the difficulty for the ad hoc agent to join the team: full observability (\emph{FO}) and partial observability without (\emph{PO}) and with (\emph{POC}) communication. We present results with 20 percent of noise in the action and communication as described in Section~\ref{sec:domain}.
+We now present several experiments to evaluate how an ad hoc agent can join a team for which it does not know the specific task, its role, and the communication signals being used. We will compare several teams: a pre-formed team (\emph{T}), a team including the ad hoc agent (\emph{A}), and a few baselines described next. We consider several different conditions that affect the team efficiency and the difficulty for the ad hoc agent to join the team: full observability (\emph{FO}) and partial observability without (\emph{PO}) and with (\emph{POC}) communication. We present results with 20 percent noise in the action and communication as described in Section~\ref{sec:domain}.
 
 For each experiment run we randomly create a domain set $D$, comprised of a set of 10 task hypotheses, 10 team configurations, and 10 communication protocols; resulting in 1000 domains. Among this set, one configuration was selected for the team but was unknown to the ad hoc agent. All the figures presented next display the mean and standard error of the variable considered. Standard errors are shown as a shaded area, but, given the high number of samples (1000 runs using the same random seed for all conditions), it is barely visible. Statistical results presented are two-sample t-test to determine if the average final scores of teams are equal.
 
@@ -59,7 +59,7 @@ We start by showing how the different conditions affect the behavior of the pre-
 \begin{figure}[htbp!]
   \centering
   \includegraphics[trim=2.6cm 0.4cm 2.7cm 1.8cm, clip=true, width=0.8\columnwidth]{plots/with_noise/teamComparaison.png}
-  \caption{Comparison of teams with full observability (\emph{T-FO}), partial observability without (\emph{T-PO}) and with (\emph{T-POC}) communication. The use of communication in the partial observability case allows recovering similar performances than with full observability.}
+  \caption{Comparison of teams with full observability (\emph{T-FO}), partial observability without (\emph{T-PO}) and with (\emph{T-POC}) communication. The use of communication in the partial observability case allows recovering similar performances to full observability.}
   \label{fig:cmpteam}
 \end{figure}
 
@@ -85,7 +85,7 @@ We start by showing how the different conditions affect the behavior of the pre-
 % \vspace{-0.3cm}
 \paragraph{Ad Hoc with Full Observability}
 
-We now remove one of the agents from the standard team and replace it with our ad hoc agent (Figure~\ref{fig:fullobs}). In the case of full observability the inclusion of the ad hoc agent has no impact, on average, on the team performance (\emph{T-FO} vs \emph{A-FO} -- the null hypothesis cannot be rejected with {\small$p=0.276$}). It means that the ad hoc agent can correctly identify the correct team configuration without impacting the behavior of the full team. As a point of comparison, we added the performance of a team with one of the agents acting randomly (\emph{R-FO}). Such team almost never captures the prey.
+We now remove one of the agents from the standard team and replace it with our ad hoc agent (Figure~\ref{fig:fullobs}). In the case of full observability the inclusion of the ad hoc agent has no impact, on average, on the team performance (\emph{T-FO} vs \emph{A-FO} -- the null hypothesis cannot be rejected with {\small$p=0.276$}). It means that the ad hoc agent can correctly identify the correct team configuration without impacting the behavior of the full team. As a point of comparison, we added the performance of a team with one of the agents acting randomly (\emph{R-FO}). Such a team almost never captures the prey.
 
 
 \begin{figure}[htbp!]
